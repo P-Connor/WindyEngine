@@ -140,7 +140,6 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 									screenPoints[gameObjects[obj].mesh.triangles[i].Y], 
 									screenPoints[gameObjects[obj].mesh.triangles[i].Z], 
 									hdc, RGB(255, 255, 255));
-			WinLog.Log(6);
 		}
 	}
 

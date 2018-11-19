@@ -31,9 +31,7 @@ private:
 template<class T>
 void Debug::Log(const T& val)
 {
-	static size_t line;
-
-	ofstream << line++ << ": " << val << std::endl;
+	ofstream << ": " << val << std::endl;
 }
 
 #define WinLog (*Debug::GetInstance())

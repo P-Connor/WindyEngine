@@ -113,4 +113,9 @@
       <Filter>Core Classes</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="WinLog.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

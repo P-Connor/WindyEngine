@@ -52,6 +52,9 @@
     <ClInclude Include="Windy.h" />
     <ClInclude Include="WindyMath.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="WinLog.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{78BA67C3-E330-4AD0-9882-969E02A1DF1A}</ProjectGuid>
