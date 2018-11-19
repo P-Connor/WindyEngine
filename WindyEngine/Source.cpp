@@ -10,6 +10,8 @@ void Windy::Begin() {
 }
 	
 void Windy::Update() {
+	WinLog.StartTimer(0);
+	
 	static double angle[] = { 0,0,0 }, angleInc = .2;
 
 	for (int axis = 0; axis < 3; axis++) {
@@ -54,5 +56,6 @@ void Windy::Update() {
 	
 	gameObjects[0].transform.rotation = Vector3<double>(angle[0], angle[1], angle[2]);
 
+	WinLog.EndTimer(0);
 }
 

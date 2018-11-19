@@ -26,6 +26,7 @@ private:
 	std::ofstream ofstream;
 
 	std::chrono::steady_clock::time_point timers[10];
+	std::chrono::steady_clock::duration durations[10];
 };
 
 template<class T>

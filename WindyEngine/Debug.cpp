@@ -12,7 +12,8 @@ void Debug::StartTimer(const size_t& timer)
 
 void Debug::EndTimer(const size_t& timer)
 {
-	timers[timer] = (std::chrono::steady_clock::time_point)std::chrono::duration_cast<std::chrono::milliseconds>(timers[timer] - std::chrono::steady_clock::now());
+	durations[timer] = std::chrono::steady_clock::now() - timers[timer];
+	Log(durations[timer].count());
 }
 
 Debug::Debug()
