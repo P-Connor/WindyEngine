@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Component Classes">
+      <UniqueIdentifier>{aabc51f3-5e8d-43f9-89fa-e785b7fe5f6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering Classes">
+      <UniqueIdentifier>{d2aa4be9-9f56-405d-8e70-41e78728531e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Classes">
+      <UniqueIdentifier>{f9e07506-6f64-42ca-b1fa-360981f8e4d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generic Datatypes">
+      <UniqueIdentifier>{018fc4ec-ebfe-48ca-ba0d-5571fbe7741c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Primitive Meshes">
+      <UniqueIdentifier>{4295a58b-9fc4-456c-865b-3454ecb84520}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Generic Datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Rendering Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Rendering Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Windy.cpp">
+      <Filter>Core Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Generic Datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Component Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Component Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Primitive Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix4.cpp">
+      <Filter>Generic Datatypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Rendering Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Core Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Rendering Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Core Classes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Vector2.h">
+      <Filter>Generic Datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Generic Datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Rendering Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Rendering Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Windy.h">
+      <Filter>Core Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Generic Datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Component Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Component Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Generic Datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Primitive Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix4.h">
+      <Filter>Generic Datatypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Rendering Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="WindyMath.h">
+      <Filter>Core Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Core Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Rendering Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Core Classes</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
