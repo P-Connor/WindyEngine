@@ -5,17 +5,6 @@ Debug* Debug::GetInstance() {
 	return &instance;
 }
 
-void Debug::StartTimer(const size_t& timer)
-{
-	timers[timer] = std::chrono::steady_clock::now();
-}
-
-void Debug::EndTimer(const size_t& timer)
-{
-	durations[timer] = std::chrono::steady_clock::now() - timers[timer];
-	Log(durations[timer].count());
-}
-
 Debug::Debug()
 {
 	ofstream.open(logFileName, std::ofstream::out | std::ofstream::trunc);
@@ -23,5 +12,14 @@ Debug::Debug()
 
 Debug::~Debug()
 {
+	int sum = 0, count = 0, num;
+	std::ifstream ifstream;
+	ifstream.open("WinLog.txt");
+	while (ifstream >> num) {
+		sum += num;
+		count++;
+	}
+	ofstream << "Average: " << sum / count;
+	
 	ofstream.close();
 }

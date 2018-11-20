@@ -62,6 +62,9 @@
     <ClCompile Include="Debug.cpp">
       <Filter>Core Classes</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Core Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector2.h">
@@ -110,6 +113,9 @@
       <Filter>Rendering Classes</Filter>
     </ClInclude>
     <ClInclude Include="Debug.h">
+      <Filter>Core Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>Core Classes</Filter>
     </ClInclude>
   </ItemGroup>

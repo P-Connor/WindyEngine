@@ -18,7 +18,13 @@ public:
 	MainWindow& GetMainWindow();
 	void AddGameObject(GameObject&);
 
+	unsigned int FrameRate();
+	double DeltaTime();
+
 private:
+	double deltaTime;
+	long frameRate;
+
 	LPCWSTR appName = L"WindyEngine";
 	LPCWSTR displayName = L"Windy";
 	MainWindow mainWin;

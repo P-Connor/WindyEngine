@@ -1,10 +1,11 @@
 #pragma once
 #include <fstream>
 #include <string>
-#include <chrono>
+#include <map>
+#include "Timer.h"
 
 /*Singleton class for logging to an output file
-and timing different functions. Access using "WinLog" */
+and timing different functions. Access using "WinDebug" */
 class Debug {
 
 public:
@@ -13,11 +14,6 @@ public:
 	template <class T>
 	void Log(const T&);
 
-	//Initializes a timer at a specified index from 0-9
-	void StartTimer(const size_t&);
-	//Ends a timer at a specified index from 0-9
-	void EndTimer(const size_t&);
-
 private:
 	Debug();
 	~Debug();
@@ -25,14 +21,13 @@ private:
 	const std::string logFileName = "WinLog.txt";
 	std::ofstream ofstream;
 
-	std::chrono::steady_clock::time_point timers[10];
-	std::chrono::steady_clock::duration durations[10];
+	std::map<std::string, Timer> timers;
 };
 
 template<class T>
 void Debug::Log(const T& val)
 {
-	ofstream << ": " << val << std::endl;
+	ofstream << val << std::endl;
 }
 
-#define WinLog (*Debug::GetInstance())
+#define WinDebug (*Debug::GetInstance())

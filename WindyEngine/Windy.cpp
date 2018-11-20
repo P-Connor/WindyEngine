@@ -39,12 +39,26 @@ Windy::Windy(LPCWSTR displayT, int w, int h) : mainWin( displayT,
 }
 
 void Windy::Loop() {
+	static Timer framerateTimer;
+	static long frames = 0;
+	static double elapsedT = 0;
+	
 	HDC hdc = GetDC(mainWin.GetWindowH());
 	mainWin.Draw(hdc, gameObjects);
 	ReleaseDC(mainWin.GetWindowH(), hdc);
 	
 	WInput.UpdateKeys();
 	Update();
+
+	frames++;
+	deltaTime = framerateTimer.GetValue() / 100000000.0;
+	elapsedT += deltaTime;
+	framerateTimer.ResetTimer();
+	if (elapsedT > 1) {
+		WinDebug.Log(frames);
+		frames = 0;
+		elapsedT -= 1;
+	}
 }
 
 MainWindow& Windy::GetMainWindow() {
@@ -54,4 +68,14 @@ MainWindow& Windy::GetMainWindow() {
 void Windy::AddGameObject(GameObject& gObj)
 {
 	gameObjects.push_back(gObj);
+}
+
+unsigned int Windy::FrameRate()
+{
+	return frameRate;
+}
+
+double Windy::DeltaTime()
+{
+	return deltaTime;
 }

@@ -23,7 +23,7 @@ Camera::Camera(const Vector2<int>& _resolution)
 Vector2<int> Camera::WorldToScreen(const Vector3<double>& point3D)
 {	
 	Vector3<double> ret = worldToCamera * point3D;	//Convert to camera coordinate system
-	if (ret.Z < 0) {
+	if (ret.Z < nearP) {
 		return Vector2<int>(-1, -1);
 	}
 	ret = projectionMatrix.MultiplyHomogeneous(ret);//Project to canvas
