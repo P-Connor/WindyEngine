@@ -12,11 +12,11 @@ public:
 
 	const HDC& GetMemoryHDC();
 	void ClearBuffer();
-	void FillPixel(int, int, COLORREF);
-	COLORREF GetPixel(int, int);
-	void DrawLine(Vector2<int>, Vector2<int>, HDC, COLORREF);
-	void DrawLine(const int&, const int&, const int&, const int&, HDC, COLORREF);
-	void DrawTriangle(Vector2<int>, Vector2<int>, Vector2<int>, HDC, COLORREF);
+	void FillPixel(const int&, const int&, const COLORREF&);
+	COLORREF GetPixel(const int&, const int&);
+	void DrawLine(const Vector2<int>&, const Vector2<int>&, const COLORREF&);
+	void DrawLine(const int&, const int&, const int&, const int&, const COLORREF&);
+	void DrawTriangle(const Vector2<int>&, const Vector2<int>&, const Vector2<int>&);
 
 private:
 	HDC memoryHDC;

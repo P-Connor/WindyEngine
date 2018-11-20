@@ -138,8 +138,7 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 		for (int i = 0; i < triCount; i++) {
 			graphics.DrawTriangle(	screenPoints[gameObjects[obj].mesh.triangles[i].X], 
 									screenPoints[gameObjects[obj].mesh.triangles[i].Y], 
-									screenPoints[gameObjects[obj].mesh.triangles[i].Z], 
-									hdc, RGB(255, 255, 255));
+									screenPoints[gameObjects[obj].mesh.triangles[i].Z] );
 		}
 	}
 

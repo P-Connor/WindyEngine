@@ -12,7 +12,7 @@ Debug::Debug()
 
 Debug::~Debug()
 {
-	int sum = 0, count = 0, num;
+	long long sum = 0, count = 0, num;
 	std::ifstream ifstream;
 	ifstream.open("WinLog.txt");
 	while (ifstream >> num) {
@@ -20,6 +20,7 @@ Debug::~Debug()
 		count++;
 	}
 	ofstream << "Average: " << sum / count;
+	ifstream.close();
 	
 	ofstream.close();
 }

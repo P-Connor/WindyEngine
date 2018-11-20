@@ -6,8 +6,8 @@ class Timer {
 public:
 	Timer();
 	
-	void ResetTimer();
-	long long GetValue();
+	void Reset();
+	long long Value();
 
 private:
 	std::chrono::steady_clock::time_point timeStart;
