@@ -23,7 +23,7 @@ public:
 
 private:
 	double deltaTime;
-	long frameRate;
+	long frameRate = 0;
 
 	LPCWSTR appName = L"WindyEngine";
 	LPCWSTR displayName = L"Windy";

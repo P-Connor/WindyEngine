@@ -9,10 +9,10 @@ Camera::Camera(const Vector2<int>& _resolution)
 	aspectRatio = 16.0 / 9;
 	fov = (75 * (2 * 3.14159265359)) / 360;
 
-	projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)), 0, 0,	0},
-									{0, -1 / WindyMath::Tan(fov / 2), 0, 0},	//INVESTIGATE WHY NEGATIVE
-									{0, 0, 1, 0},
-									{0, 0, 1, 0}	} };
+	projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0	},
+									{0,												1 / WindyMath::Tan(fov / 2),	0,	0	},
+									{0,												0,								1,	0	},
+									{0,												0,								1,	0	}	} };
 
 	resolution = _resolution;
 
@@ -20,31 +20,28 @@ Camera::Camera(const Vector2<int>& _resolution)
 	cameraToWorld = worldToCamera;
 }
 
-Vector2<int> Camera::WorldToScreen(const Vector3<double>& point3D)
+//Returns true if the point is potentially visible
+void Camera::WorldToScreen(Vertex3& vert)
 {	
-	Vector3<double> ret = worldToCamera * point3D;	//Convert to camera coordinate system
-	if (ret.Z < nearP) {
-		return Vector2<int>(-1, -1);
-	}
-	ret = projectionMatrix.MultiplyHomogeneous(ret);//Project to canvas
+	vert.position = worldToCamera * vert.position;	//Convert to camera coordinate system
+
+	vert.position = projectionMatrix.MultiplyHomogeneous(vert.position);//Project to canvas
 	
 	//Normalize coordinates (0 to 1)
-	double height = WindyMath::Tan(fov / 2), width = height;
-	ret.X = (ret.X + (width  / 2)) / width;
-	ret.Y = (ret.Y + (height / 2)) / height;
+	double size = WindyMath::Tan(fov / 2);
+	vert.position.X = (vert.position.X + (size  / 2)) / size;
+	vert.position.Y = (vert.position.Y + (size / 2)) / size;
 
 	//Convert to screen coordinates
-	ret.X *= resolution.X;
-	ret.Y *= resolution.Y;
-
-	return Vector2<int>(ret.X, ret.Y);
+	vert.position.X *= resolution.X;
+	vert.position.Y = resolution.Y - (resolution.Y * vert.position.Y); //Flip on y axis for top to bottom Y coords
 }
 
 void Camera::SetFov(const double& deg)
 {
 	fov = (deg * (2 * 3.14159265359)) / 360;
-	projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)), 0, 0,	0},
-									{0, 1 / WindyMath::Tan(fov / 2), 0, 0},
-									{0, 0, 1, 0},
-									{0, 0, 1, 0}	} };
+	projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0	},
+									{0,												1 / WindyMath::Tan(fov / 2),	0,	0	},
+									{0,												0,								1,	0	},
+									{0,												0,								1,	0	}	} };
 }

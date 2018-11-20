@@ -56,14 +56,14 @@
     <ClCompile Include="Input.cpp">
       <Filter>Core Classes</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>Rendering Classes</Filter>
-    </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>Core Classes</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Core Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex3.cpp">
+      <Filter>Rendering Classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,14 +109,14 @@
     <ClInclude Include="Input.h">
       <Filter>Core Classes</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Rendering Classes</Filter>
-    </ClInclude>
     <ClInclude Include="Debug.h">
       <Filter>Core Classes</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Core Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex3.h">
+      <Filter>Rendering Classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

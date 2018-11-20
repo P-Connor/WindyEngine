@@ -75,7 +75,7 @@ void Graphics::DrawLine(const Vector2<int>& p1, const Vector2<int>& p2, const CO
 
 void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& Y2, const COLORREF& color)
 {
-	//Timer timer1;
+	Timer timer1;
 
 	double slope;
 	if ((X1 - X2) != 0) {
@@ -143,14 +143,150 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 
 	}
 
-	//WinDebug.Log(timer1.Value());
-	//timer1.Reset();
+	WinDebug.Log(timer1.Value());
+	timer1.Reset();
 }
 
-void Graphics::DrawTriangle(const Vector2<int>& p1, const Vector2<int>& p2, const Vector2<int>& p3)
+void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3)
 {
 	const static COLORREF color = RGB(255, 255, 255);
-	DrawLine(p1, p2, color);
-	DrawLine(p2, p3, color);
-	DrawLine(p1, p3, color);
+	DrawLine((int)vertex1.position.X, (int)vertex1.position.Y, (int)vertex2.position.X, (int)vertex2.position.Y, color);
+	DrawLine((int)vertex2.position.X, (int)vertex2.position.Y, (int)vertex3.position.X, (int)vertex3.position.Y, color);
+	DrawLine((int)vertex1.position.X, (int)vertex1.position.Y, (int)vertex3.position.X, (int)vertex3.position.Y, color);
+
+	/*
+	//Sort vertices from smallest Y to largest Y (top to bottom)
+	Vector3<double> v1 = vertex1.position, v2 = vertex2.position, v3 = vertex3.position;
+	if (v1.Y > v2.Y) {
+		std::swap(v1, v2);
+	}
+	if (v1.Y > v3.Y) {
+		std::swap(v1, v3);
+	}
+	if (v2.Y > v3.Y) {
+		std::swap(v2, v3);
+	}
+
+	//Split triangle into two horizontal-sided triangles
+	Vector2<int> v4 ((int)(v1.X + ((float)(v2.Y - v1.Y) / (float)(v3.Y - v1.Y)) * (v3.X - v1.X)), v2.Y);
+
+	//Draw bottom-faced triangle using v1, v2, and v4
+	DrawLine(v1.X, v1.Y, v2.X, v2.Y, RGB(0, 255, 0));
+	DrawLine(v1.X, v1.Y, v4.X, v4.Y, RGB(0, 255, 0));
+	DrawLine(v2.X, v2.Y, v4.X, v4.Y, RGB(0, 255, 0));
+
+	int dxL = (v1.X - v2.X), dyL = (v1.Y - v2.Y);
+	double slopeL;
+	bool switchedL;
+	double offsetL = 0;
+	int thresholdL = 1;
+	if (dxL < dyL) {
+		slopeL = dxL / dyL;
+		switchedL = true;
+	}
+	else {
+		slopeL = dyL / dxL;
+		switchedL = false;
+	}
+
+	int dxR = (v1.X - v4.X), dyR = (v1.Y - v4.Y);
+	double slopeR;
+	bool switchedR;
+	double offsetR = 0;
+	int thresholdR = 1;
+	if (dxR < dyR) {
+		slopeR = 2 * abs((double)dxR / dyR);
+		switchedR = true;
+	}
+	else {
+		slopeR = 2 * abs((double)dyR / dxR);
+		switchedR = false;
+	}
+
+	int incL = (dxL >= 0) ? -1 : 1;
+	int incR = (dxR >= 0) ? -1 : 1;
+
+	int x = v1.X, y = v1.Y;
+	int xR = x, yR = y;
+	if (switchedL) {
+		
+	}
+	else {
+		for (int xL = v1.X; xL != (int)v2.X + incL; xL += incL) {
+			if (offsetL >= thresholdL) {
+				thresholdL += 2;
+
+				do {
+					if (switchedR) {
+						offsetR += slopeR;
+						yR += incR;
+					}
+					else {
+						offsetR += slopeR;
+						xR += incR;
+					}
+				} while (offsetR < thresholdR);
+
+				thresholdR += 2;
+
+				y++;
+			}
+
+			offsetL += slopeL;
+			FillPixel(xL, y, color);
+			FillPixel(xR, y, color);
+			//for (int i = xL; i != xR; i -= (abs(xL - xR) / (xL - xR))) {
+			//	FillPixel(i, y, color + i);
+			//}
+		}
+	}
+	
+
+
+
+	//Draw top-faced triangle using v3, v4, and v2
+	DrawLine(v3.X, v3.Y, v4.X, v4.Y, RGB(0, 0, 255));
+	DrawLine(v3.X, v3.Y, v2.X, v2.Y, RGB(0, 0, 255));
+
+	slopeL = (v3.Y - v4.Y) / (v3.X - v4.X);
+	int incL = (v3.X - v4.X >= 0) ? -1 : 1;
+	slopeL = abs(slopeL * 2);
+	double offsetL = 0;
+	int thresholdL = 1;
+
+	slopeR = (v3.Y - v2.Y) / (v3.X - v2.X);
+	int incR = (v3.X - v2.X >= 0) ? -1 : 1;
+	slopeR = abs(slopeR * 2);
+	double offsetR = 0;
+	int thresholdR = 1;
+
+	if (slopeL <= 1) {
+		int y = v3.Y;
+		int xR = (int)v4.X;
+		for (int xL = v3.X; xL != (int)v4.X + incL; xL += incL) {
+			if (offsetL >= thresholdL) {
+				thresholdL += 2;
+
+				do {
+					offsetR += slopeR;
+					xR += incR;
+				} while (offsetR < thresholdR);
+				thresholdR += 2;
+
+				y--;
+			}
+
+			offsetL += slopeL;
+			//FillPixel(xL, y, color);
+			//FillPixel(xR, y, color);
+		}
+	}
+	*/
 }
+
+bool Graphics::EdgeFunction(const Vector3<double>& v1, const Vector3<double>& v2, const Vector3<double>& v3)
+{
+	return ((v3.X - v1.X) * (v2.Y - v1.Y) - (v3.Y - v1.Y) * (v2.X - v1.X) >= 0);
+}
+
+

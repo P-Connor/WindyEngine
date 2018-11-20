@@ -1,5 +1,5 @@
 #pragma once
-//#include <cmath>
+
 //TEMPLATE HEADER
 
 template <class T>
@@ -21,6 +21,8 @@ public:
 	T Magnitude();
 	T MagnitudeSquared();
 	void Normalize();
+
+	double perpProduct(const Vector2<T>&);
 };
 
 //IMPLEMENTATION
@@ -96,5 +98,11 @@ void Vector2<T>::Normalize()
 		X /= magnitude;
 		Y /= magnitude;
 	}
+}
+
+template<class T>
+inline double Vector2<T>::perpProduct(const Vector2<T>& vec)
+{
+	return X * vec.X - Y * vec.Y;
 }
 

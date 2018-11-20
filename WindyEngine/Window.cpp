@@ -124,21 +124,23 @@ MainWindow::MainWindow(
 void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {	
 	
 	for (int obj = 0; obj < gameObjects.size(); obj++) {
-		const int vertCount = sizeof(gameObjects[obj].mesh.vertices) / sizeof(Vertex);
+		const int vertCount = sizeof(gameObjects[obj].mesh.vertices) / sizeof(Vertex3);
 		const int triCount = sizeof(gameObjects[obj].mesh.triangles) / sizeof(Vector3<size_t>);
-		Vertex modifiedVerts[vertCount];
-		Vector2<int> screenPoints[vertCount];
+		Vertex3 modifiedVerts[vertCount];
+
 		for (int i = 0; i < vertCount; i++) {
 			modifiedVerts[i] = gameObjects[obj].mesh.vertices[i];
 			modifiedVerts[i].position = Matrix4::Scale(gameObjects[obj].transform.scale) * modifiedVerts[i].position;
 			modifiedVerts[i].position = Matrix4::RotationDeg(gameObjects[obj].transform.rotation) * modifiedVerts[i].position;
 			modifiedVerts[i].position.Translate(gameObjects[obj].transform.position);
-			screenPoints[i] = camera.WorldToScreen(modifiedVerts[i].position);
+			camera.WorldToScreen(modifiedVerts[i]);
 		}
 		for (int i = 0; i < triCount; i++) {
-			graphics.DrawTriangle(	screenPoints[gameObjects[obj].mesh.triangles[i].X], 
-									screenPoints[gameObjects[obj].mesh.triangles[i].Y], 
-									screenPoints[gameObjects[obj].mesh.triangles[i].Z] );
+			graphics.DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
+									modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
+									modifiedVerts[gameObjects[obj].mesh.triangles[i].Z] );
+			//BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics.GetMemoryHDC(), 0, 0, SRCCOPY);
+			//graphics.ClearBuffer();
 		}
 	}
 

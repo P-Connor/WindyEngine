@@ -1,12 +1,13 @@
 #pragma once
 #include "Matrix4.h"
+#include "Vertex3.h"
 #include "Vector2.h"
 #include "Vector3.h"
 
 class Camera {
 	
 public:
-	Vector2<int> WorldToScreen(const Vector3<double>&);
+	void WorldToScreen(Vertex3&);
 	void SetFov(const double&);
 	
 	Camera() {};

@@ -31,7 +31,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="Vertex3.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="Windy.cpp" />
   </ItemGroup>
@@ -49,7 +49,7 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
-    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Vertex3.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="Windy.h" />
     <ClInclude Include="WindyMath.h" />

@@ -50,14 +50,15 @@ void Windy::Loop() {
 	Update();
 
 
-	WinDebug.Log("Seconds: " + std::to_string(secondsTimer.Value() / 100000000.0));
+	//WinDebug.Log("Seconds: " + std::to_string(secondsTimer.Value() / 1000000000.0));
 	frames++;
 	deltaTime = framerateTimer.Value() / 100000000.0;
-	if (secondsTimer.Value() > 100000000) {
-		WinDebug.Log(frames);
+	if (secondsTimer.Value() > 1000000000) {
+		frameRate = frames;
 		frames = 0;
 		secondsTimer.Reset();
 	}
+	WinDebug.Log(frameRate);
 	framerateTimer.Reset();
 }
 
