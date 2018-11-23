@@ -75,8 +75,6 @@ void Graphics::DrawLine(const Vector2<int>& p1, const Vector2<int>& p2, const CO
 
 void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& Y2, const COLORREF& color)
 {
-	Timer timer1;
-
 	double slope;
 	if ((X1 - X2) != 0) {
 		slope = (double)(Y1 - Y2) / (X1 - X2);	//Calculate slope
@@ -143,18 +141,44 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 
 	}
 
-	WinDebug.Log(timer1.Value());
-	timer1.Reset();
 }
 
-void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3)
+void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3)
+{
+	/*
+	// Compute triangle bounding box
+	int minX = min3(v1.x, v2.x, v3.x);
+	int minY = min3(v1.y, v2.y, v3.y);
+	int maxX = max3(v1.x, v2.x, v3.x);
+	int maxY = max3(v1.y, v2.y, v3.y);
+
+	// Clip against screen bounds
+	minX = max(minX, 0);
+	minY = max(minY, 0);
+	maxX = min(maxX, screenWidth - 1);
+	maxY = min(maxY, screenHeight - 1);
+
+	// Rasterize
+	Point2D p;
+	for (p.y = minY; p.y <= maxY; p.y++) {
+		for (p.x = minX; p.x <= maxX; p.x++) {
+			// Determine barycentric coordinates
+			int w0 = orient2d(v2, v3, p);
+			int w1 = orient2d(v3, v1, p);
+			int w2 = orient2d(v1, v2, p);
+
+			// If p is on or inside all edges, render pixel.
+			if (w0 >= 0 && w1 >= 0 && w2 >= 0)
+				renderPixel(p, w0, w1, w2);
+		}
+	}
+	*/
+}
+
+void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3)
 {
 	const static COLORREF color = RGB(255, 255, 255);
-	DrawLine((int)vertex1.position.X, (int)vertex1.position.Y, (int)vertex2.position.X, (int)vertex2.position.Y, color);
-	DrawLine((int)vertex2.position.X, (int)vertex2.position.Y, (int)vertex3.position.X, (int)vertex3.position.Y, color);
-	DrawLine((int)vertex1.position.X, (int)vertex1.position.Y, (int)vertex3.position.X, (int)vertex3.position.Y, color);
-
-	/*
+	
 	//Sort vertices from smallest Y to largest Y (top to bottom)
 	Vector3<double> v1 = vertex1.position, v2 = vertex2.position, v3 = vertex3.position;
 	if (v1.Y > v2.Y) {
@@ -167,121 +191,269 @@ void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, cons
 		std::swap(v2, v3);
 	}
 
-	//Split triangle into two horizontal-sided triangles
+	//Split triangle into two horizontal-sided triangles by adding another point
 	Vector2<int> v4 ((int)(v1.X + ((float)(v2.Y - v1.Y) / (float)(v3.Y - v1.Y)) * (v3.X - v1.X)), v2.Y);
 
 	//Draw bottom-faced triangle using v1, v2, and v4
-	DrawLine(v1.X, v1.Y, v2.X, v2.Y, RGB(0, 255, 0));
-	DrawLine(v1.X, v1.Y, v4.X, v4.Y, RGB(0, 255, 0));
-	DrawLine(v2.X, v2.Y, v4.X, v4.Y, RGB(0, 255, 0));
 
 	int dxL = (v1.X - v2.X), dyL = (v1.Y - v2.Y);
-	double slopeL;
-	bool switchedL;
-	double offsetL = 0;
-	int thresholdL = 1;
-	if (dxL < dyL) {
-		slopeL = dxL / dyL;
-		switchedL = true;
-	}
-	else {
-		slopeL = dyL / dxL;
-		switchedL = false;
-	}
-
 	int dxR = (v1.X - v4.X), dyR = (v1.Y - v4.Y);
-	double slopeR;
-	bool switchedR;
-	double offsetR = 0;
-	int thresholdR = 1;
-	if (dxR < dyR) {
-		slopeR = 2 * abs((double)dxR / dyR);
-		switchedR = true;
-	}
-	else {
-		slopeR = 2 * abs((double)dyR / dxR);
-		switchedR = false;
-	}
+	if (dyL != 0 && dxL != 0) {
+		double slopeL;
+		bool switchedL;
+		double offsetL = 0;
+		int thresholdL = 1;
+		int incL = (dxL >= 0) ? -1 : 1;
+		if (abs(dyL) <= abs(dxL)) {
+			if (dxL != 0) {
+				slopeL = 2 * abs((double)dyL / dxL);
+			}
+			else {
+				slopeL = 65536;
+			}
+			switchedL = false;
+		}
+		else {
+			if (dyL != 0) {
+				slopeL = 2 * abs((double)dxL / dyL);
+			}
+			else {
+				slopeL = 65536;
+			}
+			switchedL = true;
+		}
 
-	int incL = (dxL >= 0) ? -1 : 1;
-	int incR = (dxR >= 0) ? -1 : 1;
+		double slopeR;
+		bool switchedR;
+		double offsetR = 0;
+		int thresholdR = 1;
+		int incR = (dxR >= 0) ? -1 : 1;
+		if (abs(dyR) <= abs(dxR)) {
+			if (dxR != 0) {
+				slopeR = 2 * abs((double)dyR / dxR);
+			}
+			else {
+				slopeR = 65536;
+			}
+			switchedR = false;
+		}
+		else {
+			if (dyR != 0) {
+				slopeR = 2 * abs((double)dxR / dyR);
+			}
+			else {
+				slopeR = 65536;
+			}
+			switchedR = true;
+		}
 
-	int x = v1.X, y = v1.Y;
-	int xR = x, yR = y;
-	if (switchedL) {
-		
-	}
-	else {
-		for (int xL = v1.X; xL != (int)v2.X + incL; xL += incL) {
-			if (offsetL >= thresholdL) {
-				thresholdL += 2;
+		int x = v1.X, y = v1.Y;
+		int xR = x, yR = y;
+		if (!switchedL) {
+			for (int xL = v1.X; xL != (int)v2.X + incL; xL += incL) {
+				if (offsetL > thresholdL) {
+					thresholdL += 2;
 
-				do {
-					if (switchedR) {
-						offsetR += slopeR;
-						yR += incR;
+					if (!switchedR) {
+						do {
+							offsetR += slopeR;
+							xR += incR;
+							if (slopeR == 0) { break; }
+
+						} while (offsetR < thresholdR);
+
+						thresholdR += 2;
 					}
 					else {
 						offsetR += slopeR;
-						xR += incR;
+						if (offsetR > thresholdR) {
+							xR += incR;
+							thresholdR += 2;
+						}
 					}
-				} while (offsetR < thresholdR);
 
-				thresholdR += 2;
+					y++;
+				}
 
-				y++;
+				offsetL += slopeL;
+
+				for (int i = xL; i != xR; i -= (abs(xL - xR) / (xL - xR))) {
+					FillPixel(i, y, color);
+				}
 			}
-
-			offsetL += slopeL;
-			FillPixel(xL, y, color);
-			FillPixel(xR, y, color);
-			//for (int i = xL; i != xR; i -= (abs(xL - xR) / (xL - xR))) {
-			//	FillPixel(i, y, color + i);
-			//}
 		}
+		else {
+
+			for (int xL = v1.X; xL != (int)v2.X + incL; xL += incL) {
+
+				while (offsetL < thresholdL && y != (int)v2.Y) {
+					offsetL += slopeL;
+
+					if (!switchedR) {
+						do {
+							offsetR += slopeR;
+							xR += incR;
+							if (slopeR == 0) { break; }
+
+						} while (offsetR < thresholdR);
+
+						thresholdR += 2;
+					}
+					else {
+						offsetR += slopeR;
+						if (offsetR > thresholdR) {
+							xR += incR;
+							thresholdR += 2;
+						}
+					}
+
+					for (int i = xL; i != xR; i -= (abs(xL - xR) / (xL - xR))) {
+						FillPixel(i, y, color);
+					}
+
+					y++;
+				}
+
+				thresholdL += 2;
+			}
+		}
+
 	}
 	
 
 
 
 	//Draw top-faced triangle using v3, v4, and v2
-	DrawLine(v3.X, v3.Y, v4.X, v4.Y, RGB(0, 0, 255));
-	DrawLine(v3.X, v3.Y, v2.X, v2.Y, RGB(0, 0, 255));
 
-	slopeL = (v3.Y - v4.Y) / (v3.X - v4.X);
-	int incL = (v3.X - v4.X >= 0) ? -1 : 1;
-	slopeL = abs(slopeL * 2);
-	double offsetL = 0;
-	int thresholdL = 1;
+	dxR = (v3.X - v4.X), dyR = (v3.Y - v4.Y);
+	dxL = (v3.X - v2.X), dyL = (v3.Y - v2.Y);
+	if (dyL != 0 && dxL != 0) {
+		double slopeL;
+		bool switchedL;
+		double offsetL = 0;
+		int thresholdL = 1;
+		int incL = (dxL >= 0) ? -1 : 1;
+		if (abs(dyL) <= abs(dxL)) {
+			if (dxL != 0) {
+				slopeL = 2 * abs((double)dyL / dxL);
+			}
+			else {
+				slopeL = 65536;
+			}
+			switchedL = false;
+		}
+		else {
+			if (dyL != 0) {
+				slopeL = 2 * abs((double)dxL / dyL);
+			}
+			else {
+				slopeL = 65536;
+			}
+			switchedL = true;
+		}
 
-	slopeR = (v3.Y - v2.Y) / (v3.X - v2.X);
-	int incR = (v3.X - v2.X >= 0) ? -1 : 1;
-	slopeR = abs(slopeR * 2);
-	double offsetR = 0;
-	int thresholdR = 1;
+		double slopeR;
+		bool switchedR;
+		double offsetR = 0;
+		int thresholdR = 1;
+		int incR = (dxR >= 0) ? -1 : 1;
+		if (abs(dyR) <= abs(dxR)) {
+			if (dxR != 0) {
+				slopeR = 2 * abs((double)dyR / dxR);
+			}
+			else {
+				slopeR = 65536;
+			}
+			switchedR = false;
+		}
+		else {
+			if (dyR != 0) {
+				slopeR = 2 * abs((double)dxR / dyR);
+			}
+			else {
+				slopeR = 65536;
+			}
+			switchedR = true;
+		}
 
-	if (slopeL <= 1) {
-		int y = v3.Y;
-		int xR = (int)v4.X;
-		for (int xL = v3.X; xL != (int)v4.X + incL; xL += incL) {
-			if (offsetL >= thresholdL) {
+		int x = v3.X, y = v3.Y;
+		int xR = x, yR = y;
+		if (!switchedL) {
+			for (int xL = v3.X; xL != (int)v2.X + incL; xL += incL) {
+				if (offsetL > thresholdL) {
+					thresholdL += 2;
+
+					if (!switchedR) {
+						do {
+							offsetR += slopeR;
+							xR += incR;
+							if (slopeR == 0) { break; }
+
+						} while (offsetR < thresholdR);
+
+						thresholdR += 2;
+					}
+					else {
+						offsetR += slopeR;
+						if (offsetR > thresholdR) {
+							xR += incR;
+							thresholdR += 2;
+						}
+					}
+
+					y--;
+				}
+
+				offsetL += slopeL;
+
+				//FillPixel(xL, y, color);
+				//FillPixel(xR, y, color);
+
+				for (int i = xL; i != xR; i -= (abs(xL - xR) / (xL - xR))) {
+					FillPixel(i, y, RGB(0, 0, 255));
+				}
+			}
+		}
+		else {
+
+			for (int xL = v3.X; xL != (int)v2.X + incL; xL += incL) {
+
+				while (offsetL < thresholdL && y != (int)v2.Y) {
+					offsetL += slopeL;
+
+					if (!switchedR) {
+						do {
+							offsetR += slopeR;
+							xR += incR;
+							if (slopeR == 0) { break; }
+
+						} while (offsetR < thresholdR);
+
+						thresholdR += 2;
+					}
+					else {
+						offsetR += slopeR;
+						if (offsetR > thresholdR) {
+							xR += incR;
+							thresholdR += 2;
+						}
+					}
+
+					for (int i = xL; i != xR; i -= (abs(xL - xR) / (xL - xR))) {
+						FillPixel(i, y, RGB(0, 0, 255));
+					}
+
+					y--;
+				}
+
 				thresholdL += 2;
 
-				do {
-					offsetR += slopeR;
-					xR += incR;
-				} while (offsetR < thresholdR);
-				thresholdR += 2;
-
-				y--;
+				//FillPixel(xL, y, color);
+				//FillPixel(xR, y, color);
 			}
-
-			offsetL += slopeL;
-			//FillPixel(xL, y, color);
-			//FillPixel(xR, y, color);
 		}
+
 	}
-	*/
 }
 
 bool Graphics::EdgeFunction(const Vector3<double>& v1, const Vector3<double>& v2, const Vector3<double>& v3)
