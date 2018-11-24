@@ -15,8 +15,8 @@ Cube::Cube()
 	triangles[0] = Vector3<size_t>(0,1,2);
 	triangles[1] = Vector3<size_t>(3,2,1);
 	//Left v
-	triangles[2] = Vector3<size_t>(4,5,6);
-	triangles[3] = Vector3<size_t>(7,6,5);
+	triangles[2] = Vector3<size_t>(4,6,5);
+	triangles[3] = Vector3<size_t>(7,5,6);
 	//Front v
 	triangles[4] = Vector3<size_t>(1,5,3);
 	triangles[5] = Vector3<size_t>(7,3,5);

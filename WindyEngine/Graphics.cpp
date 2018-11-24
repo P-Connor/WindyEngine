@@ -145,34 +145,61 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 
 void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3)
 {
-	/*
-	// Compute triangle bounding box
-	int minX = min3(v1.x, v2.x, v3.x);
-	int minY = min3(v1.y, v2.y, v3.y);
-	int maxX = max3(v1.x, v2.x, v3.x);
-	int maxY = max3(v1.y, v2.y, v3.y);
+	static Timer t1;
 
+	// Compute triangle bounding box
+	int minX = WindyMath::Min3(v1.position.X, v2.position.X, v3.position.X);
+	int minY = WindyMath::Min3(v1.position.Y, v2.position.Y, v3.position.Y);
+	int maxX = WindyMath::Max3(v1.position.X, v2.position.X, v3.position.X);
+	int maxY = WindyMath::Max3(v1.position.Y, v2.position.Y, v3.position.Y);
+
+	/*
 	// Clip against screen bounds
 	minX = max(minX, 0);
 	minY = max(minY, 0);
 	maxX = min(maxX, screenWidth - 1);
 	maxY = min(maxY, screenHeight - 1);
+	*/
+
+	int A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
+	int A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
+	int A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
 
 	// Rasterize
-	Point2D p;
-	for (p.y = minY; p.y <= maxY; p.y++) {
-		for (p.x = minX; p.x <= maxX; p.x++) {
-			// Determine barycentric coordinates
-			int w0 = orient2d(v2, v3, p);
-			int w1 = orient2d(v3, v1, p);
-			int w2 = orient2d(v1, v2, p);
+	Vector2<int> p(minX, minY);
+	int w0_row = (A23)* p.X + (B23)* p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
+	int w1_row = (A31)* p.X + (B31)* p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
+	int w2_row = (A12)* p.X + (B12)* p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
 
+	for (p.Y = minY; p.Y <= maxY; p.Y++) {
+		
+		int w0 = w0_row, w1 = w1_row, w2 = w2_row;
+
+		for (p.X = minX; p.X <= maxX; p.X++) {
+			
 			// If p is on or inside all edges, render pixel.
-			if (w0 >= 0 && w1 >= 0 && w2 >= 0)
-				renderPixel(p, w0, w1, w2);
+			if (w0 <= 0 && w1 <= 0 && w2 <= 0) {
+				FillPixel(p.X, p.Y, RGB(v1.position.Z * 1000 - 1000, 255, 255));
+			}
+
+			//One step to the right
+			w0 += A23;
+			w1 += A31;
+			w2 += A12;
+
+			//WinDebug.Log("w0: " + std::to_string(w0) + ", w1: " + std::to_string(w1) + ", w2: " + std::to_string(w1));
 		}
+
+		// One row step
+		w0_row += B23;
+		w1_row += B31;
+		w2_row += B12;
 	}
-	*/
+
+	//WinDebug.Log("-------------------------------------------------------------");
+
+	WinDebug.Log(t1.Value());
+	t1.Reset();
 }
 
 void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3)
@@ -456,9 +483,13 @@ void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& verte
 	}
 }
 
-bool Graphics::EdgeFunction(const Vector3<double>& v1, const Vector3<double>& v2, const Vector3<double>& v3)
+int Graphics::EdgeFunction(const Vector3<double>& v1, const Vector3<double>& v2, const Vector2<int>& point)
 {
-	return ((v3.X - v1.X) * (v2.Y - v1.Y) - (v3.Y - v1.Y) * (v2.X - v1.X) >= 0);
+	//return (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x);
+	
+	return (v1.Y - v2.Y) * point.X + (v2.X - v1.X) * point.Y + (v1.X * v2.Y - v1.Y * v2.X);
+
+	//return (point.Y - v1.Y) * (v2.X - v1.X) - (point.X - v1.X) * (v2.Y - v1.Y);
 }
 
 

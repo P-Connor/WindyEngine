@@ -136,9 +136,9 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 			camera.WorldToScreen(modifiedVerts[i]);
 		}
 		for (int i = 0; i < triCount; i++) {
-			graphics.DrawTriangleScanline(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
-											modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
-											modifiedVerts[gameObjects[obj].mesh.triangles[i].Z] );
+			graphics.DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
+									modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
+									modifiedVerts[gameObjects[obj].mesh.triangles[i].Z] );
 		}
 	}
 

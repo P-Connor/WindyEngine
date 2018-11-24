@@ -4,21 +4,21 @@
 namespace WindyMath {
 
 	template <class T>
-	double Sqrt(const T& n) { return sqrt(n);}
+	double Sqrt(const T& n) { return sqrt(n); }
 	template <class T>
-	T Abs(const T& n) {	return abs(n);}
+	T Abs(const T& n) { return abs(n); }
 
-	template <class T> 
-	T Sin(const T& n) { return sin(n);}
 	template <class T>
-	T Cos(const T& n) { return cos(n);}
+	T Sin(const T& n) { return sin(n); }
 	template <class T>
-	T Tan(const T& n) { return tan(n);}
+	T Cos(const T& n) { return cos(n); }
+	template <class T>
+	T Tan(const T& n) { return tan(n); }
 
 	template <class T>
 	T Csc(const T& n) {
 		T temp = Sin(n);
-		
+
 		if (temp != 0)
 			return 1 / temp;
 		else
@@ -49,4 +49,45 @@ namespace WindyMath {
 	}
 	*/
 
-};
+	template <class T>
+	T Min3(const T& x, const T& y, const T& z) {
+		if (x < y) {
+			if (x < z) {
+				return x;
+			}
+			else {
+				return z;
+			}
+		}
+		else {
+			if (y < z) {
+				return y;
+			}
+			else {
+				return z;
+			}
+		}
+	}
+	template <class T>
+	T Max3(const T& x, const T& y, const T& z) {
+		if (x > y) {
+			if (x > z) {
+				return x;
+			}
+			else {
+				return z;
+			}
+		}
+		else {
+			if (y > z) {
+				return y;
+			}
+			else {
+				return z;
+			}
+		}
+	}
+
+
+
+}

@@ -27,5 +27,5 @@ private:
 	unsigned char *bufferBytes = 0;
 	Vector2<int> resolution;
 
-	bool EdgeFunction(const Vector3<double>&, const Vector3<double>&, const Vector3<double>&);
+	int EdgeFunction(const Vector3<double>&, const Vector3<double>&, const Vector2<int>&);
 };
