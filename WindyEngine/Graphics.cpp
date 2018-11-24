@@ -148,10 +148,10 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 	static Timer t1;
 
 	// Compute triangle bounding box
-	int minX = WindyMath::Min3(v1.position.X, v2.position.X, v3.position.X);
-	int minY = WindyMath::Min3(v1.position.Y, v2.position.Y, v3.position.Y);
-	int maxX = WindyMath::Max3(v1.position.X, v2.position.X, v3.position.X);
-	int maxY = WindyMath::Max3(v1.position.Y, v2.position.Y, v3.position.Y);
+	double minX = WindyMath::Min3(v1.position.X, v2.position.X, v3.position.X);
+	double minY = WindyMath::Min3(v1.position.Y, v2.position.Y, v3.position.Y);
+	double maxX = WindyMath::Max3(v1.position.X, v2.position.X, v3.position.X);
+	double maxY = WindyMath::Max3(v1.position.Y, v2.position.Y, v3.position.Y);
 
 	/*
 	// Clip against screen bounds
@@ -161,25 +161,25 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 	maxY = min(maxY, screenHeight - 1);
 	*/
 
-	int A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
-	int A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
-	int A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
+	double A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
+	double A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
+	double A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
 
 	// Rasterize
-	Vector2<int> p(minX, minY);
-	int w0_row = (A23)* p.X + (B23)* p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
-	int w1_row = (A31)* p.X + (B31)* p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
-	int w2_row = (A12)* p.X + (B12)* p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
+	Vector2<double> p(minX, minY);
+	double w0_row = (A23)* p.X + (B23)* p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
+	double w1_row = (A31)* p.X + (B31)* p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
+	double w2_row = (A12)* p.X + (B12)* p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
 
 	for (p.Y = minY; p.Y <= maxY; p.Y++) {
 		
-		int w0 = w0_row, w1 = w1_row, w2 = w2_row;
+		double w0 = w0_row, w1 = w1_row, w2 = w2_row;
 
 		for (p.X = minX; p.X <= maxX; p.X++) {
 			
 			// If p is on or inside all edges, render pixel.
 			if (w0 <= 0 && w1 <= 0 && w2 <= 0) {
-				FillPixel(p.X, p.Y, RGB(v1.position.Z * 1000 - 1000, 255, 255));
+				FillPixel(p.X, p.Y, RGB(255, 255, 255));
 			}
 
 			//One step to the right
@@ -187,7 +187,6 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 			w1 += A31;
 			w2 += A12;
 
-			//WinDebug.Log("w0: " + std::to_string(w0) + ", w1: " + std::to_string(w1) + ", w2: " + std::to_string(w1));
 		}
 
 		// One row step
@@ -195,8 +194,6 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 		w1_row += B31;
 		w2_row += B12;
 	}
-
-	//WinDebug.Log("-------------------------------------------------------------");
 
 	WinDebug.Log(t1.Value());
 	t1.Reset();

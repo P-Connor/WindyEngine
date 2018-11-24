@@ -139,6 +139,8 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 			graphics.DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Z] );
+			//BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics.GetMemoryHDC(), 0, 0, SRCCOPY);
+			//graphics.ClearBuffer();
 		}
 	}
 
