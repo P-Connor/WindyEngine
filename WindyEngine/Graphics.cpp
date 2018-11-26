@@ -13,24 +13,32 @@ Graphics::Graphics(HDC& hdc, const Vector2<int>& _res)
 	memoryHDC = CreateCompatibleDC(hdc);
 	resolution = _res;
 
-	bufferInfo = { 0 };
-	bufferInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bufferInfo.bmiHeader.biWidth = resolution.X;
-	bufferInfo.bmiHeader.biHeight = -resolution.Y;
-	bufferInfo.bmiHeader.biPlanes = 1;
-	bufferInfo.bmiHeader.biBitCount = 32;
-	bufferInfo.bmiHeader.biCompression = BI_RGB;
-	bufferInfo.bmiHeader.biSizeImage = resolution.X * resolution.Y * 4;
-	bufferInfo.bmiHeader.biClrUsed = 0;
-	bufferInfo.bmiHeader.biClrImportant = 0;
-	buffer = CreateDIBSection(memoryHDC, &bufferInfo, DIB_RGB_COLORS, (void**)&bufferBytes, NULL, NULL);
+	pixelBufferInfo = { 0 };
+	pixelBufferInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	pixelBufferInfo.bmiHeader.biWidth = resolution.X;
+	pixelBufferInfo.bmiHeader.biHeight = -resolution.Y;
+	pixelBufferInfo.bmiHeader.biPlanes = 1;
+	pixelBufferInfo.bmiHeader.biBitCount = 32;
+	pixelBufferInfo.bmiHeader.biCompression = BI_RGB;
+	pixelBufferInfo.bmiHeader.biSizeImage = resolution.X * resolution.Y * 4;
+	pixelBufferInfo.bmiHeader.biClrUsed = 0;
+	pixelBufferInfo.bmiHeader.biClrImportant = 0;
+	pixelBuffer = CreateDIBSection(memoryHDC, &pixelBufferInfo, DIB_RGB_COLORS, (void**)&pixelBufferBytes, NULL, NULL);
 
-	SelectObject(memoryHDC, buffer);
+	zBufferBytes = new int[resolution.X * resolution.Y];
+	std::fill(zBufferBytes, zBufferBytes + (resolution.X * resolution.Y), 100);
+	for (long i = 0; i < resolution.X * resolution.Y; i++) {
+		//zBufferBytes[i] = INFINITY;
+		//WinDebug.Log(zBufferBytes[i]);
+	}
+
+	SelectObject(memoryHDC, pixelBuffer);
 }
 
 Graphics::~Graphics()
 {
-	DeleteObject(buffer);
+	DeleteObject(pixelBuffer);
+	delete[] zBufferBytes;
 }
 
 const HDC& Graphics::GetMemoryHDC()
@@ -39,16 +47,16 @@ const HDC& Graphics::GetMemoryHDC()
 }
 
 void Graphics::ClearBuffer() {		
-	memset(bufferBytes, 0, bufferInfo.bmiHeader.biSizeImage);
+	memset(pixelBufferBytes, 0, pixelBufferInfo.bmiHeader.biSizeImage);
 }
 
 void Graphics::FillPixel(const int& x, const int& y, const COLORREF& color)
 {
 	if (x < resolution.X && x >= 0 && y < resolution.Y && y >= 0) {
 		int index = (y * (4 * resolution.X)) + (4 * x);
-		bufferBytes[index + 0] = GetBValue(color);
-		bufferBytes[index + 1] = GetGValue(color);
-		bufferBytes[index + 2] = GetRValue(color);
+		pixelBufferBytes[index + 0] = GetBValue(color);
+		pixelBufferBytes[index + 1] = GetGValue(color);
+		pixelBufferBytes[index + 2] = GetRValue(color);
 	}
 }
 
@@ -57,9 +65,9 @@ COLORREF Graphics::GetPixel(const int& x, const int& y)
 	if (x < resolution.X && x >= 0 && y < resolution.Y && y >= 0) {
 		int index = (y * (4 * resolution.X)) + (4 * x);
 		
-		int bVal = (int)bufferBytes[index + 0];
-		int gVal = (int)bufferBytes[index + 1];
-		int rVal = (int)bufferBytes[index + 2];
+		int bVal = (int)pixelBufferBytes[index + 0];
+		int gVal = (int)pixelBufferBytes[index + 1];
+		int rVal = (int)pixelBufferBytes[index + 2];
 		
 		return RGB(rVal, gVal, bVal);
 	}
@@ -147,6 +155,11 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 {
 	static Timer t1;
 
+	//WinDebug.Log(resolution.X * resolution.Y);
+	for (long i = 0; i < (resolution.X * resolution.Y); i++) {
+		WinDebug.Log(std::to_string(zBufferBytes[i]) + ", " + std::to_string(i));
+	}
+
 	// Compute triangle bounding box
 	double minX = WindyMath::Min3(v1.position.X, v2.position.X, v3.position.X);
 	double minY = WindyMath::Min3(v1.position.Y, v2.position.Y, v3.position.Y);
@@ -179,7 +192,20 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 			
 			// If p is on or inside all edges, render pixel.
 			if (w0 <= 0 && w1 <= 0 && w2 <= 0) {
-				FillPixel(p.X, p.Y, RGB(255, 255, 255));
+				double area = w0 + w1 + w2;
+				double p0 = w0 / area, p1 = w1 / area, p2 = w2 / area;
+				byte r = GetRValue(v1.color) * p0 + GetRValue(v2.color) * p1 + GetRValue(v3.color) * p2;
+				byte g = GetGValue(v1.color) * p0 + GetGValue(v2.color) * p1 + GetGValue(v3.color) * p2;
+				byte b = GetBValue(v1.color) * p0 + GetBValue(v2.color) * p1 + GetBValue(v3.color) * p2;
+
+				double z = v1.position.Z * p0 + v2.position.Z * p1 + v3.position.Z * p2;
+
+				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
+				
+				if (zBufferBytes[(int)p.Y * resolution.X + (int)p.X] >= z) {
+					zBufferBytes[(int)p.Y * resolution.X + (int)p.X] = z;
+					FillPixel(p.X, p.Y, RGB(r, g, b));
+				}
 			}
 
 			//One step to the right
@@ -478,15 +504,6 @@ void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& verte
 		}
 
 	}
-}
-
-int Graphics::EdgeFunction(const Vector3<double>& v1, const Vector3<double>& v2, const Vector2<int>& point)
-{
-	//return (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x);
-	
-	return (v1.Y - v2.Y) * point.X + (v2.X - v1.X) * point.Y + (v1.X * v2.Y - v1.Y * v2.X);
-
-	//return (point.Y - v1.Y) * (v2.X - v1.X) - (point.X - v1.X) * (v2.Y - v1.Y);
 }
 
 

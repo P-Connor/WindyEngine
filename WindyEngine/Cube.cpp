@@ -29,4 +29,13 @@ Cube::Cube()
 	//Bottom v
 	triangles[10] = Vector3<size_t>(7,6,3);
 	triangles[11] = Vector3<size_t>(2,3,6);
+
+	vertices[0].color = RGB(255, 0, 0);
+	vertices[1].color = RGB(0, 255, 0);
+	vertices[2].color = RGB(0, 255, 0);
+	vertices[3].color = RGB(0, 0, 255);
+	vertices[4].color = RGB(255, 255, 255);
+	vertices[5].color = RGB(255, 255, 255);
+	vertices[6].color = RGB(255, 255, 255);
+	vertices[7].color = RGB(255, 255, 255);
 }

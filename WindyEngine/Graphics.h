@@ -22,10 +22,9 @@ public:
 
 private:
 	HDC memoryHDC;
-	HBITMAP buffer;
-	BITMAPINFO bufferInfo;
-	unsigned char *bufferBytes = 0;
+	HBITMAP pixelBuffer;
+	BITMAPINFO pixelBufferInfo;
+	unsigned char *pixelBufferBytes = 0;
+	int *zBufferBytes = 0;
 	Vector2<int> resolution;
-
-	int EdgeFunction(const Vector3<double>&, const Vector3<double>&, const Vector2<int>&);
 };
