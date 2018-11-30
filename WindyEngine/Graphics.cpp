@@ -25,12 +25,8 @@ Graphics::Graphics(HDC& hdc, const Vector2<int>& _res)
 	pixelBufferInfo.bmiHeader.biClrImportant = 0;
 	pixelBuffer = CreateDIBSection(memoryHDC, &pixelBufferInfo, DIB_RGB_COLORS, (void**)&pixelBufferBytes, NULL, NULL);
 
-	zBufferBytes = new int[resolution.X * resolution.Y];
-	std::fill(zBufferBytes, zBufferBytes + (resolution.X * resolution.Y), 100);
-	for (long i = 0; i < resolution.X * resolution.Y; i++) {
-		//zBufferBytes[i] = INFINITY;
-		//WinDebug.Log(zBufferBytes[i]);
-	}
+	zBufferBytes = new double [resolution.X * resolution.Y];
+	std::fill(zBufferBytes, zBufferBytes + (resolution.X * resolution.Y), INFINITY);
 
 	SelectObject(memoryHDC, pixelBuffer);
 }
@@ -48,6 +44,7 @@ const HDC& Graphics::GetMemoryHDC()
 
 void Graphics::ClearBuffer() {		
 	memset(pixelBufferBytes, 0, pixelBufferInfo.bmiHeader.biSizeImage);
+	std::fill(zBufferBytes, zBufferBytes + (resolution.X * resolution.Y), INFINITY);
 }
 
 void Graphics::FillPixel(const int& x, const int& y, const COLORREF& color)
@@ -155,24 +152,17 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 {
 	static Timer t1;
 
-	//WinDebug.Log(resolution.X * resolution.Y);
-	for (long i = 0; i < (resolution.X * resolution.Y); i++) {
-		WinDebug.Log(std::to_string(zBufferBytes[i]) + ", " + std::to_string(i));
-	}
-
 	// Compute triangle bounding box
 	double minX = WindyMath::Min3(v1.position.X, v2.position.X, v3.position.X);
 	double minY = WindyMath::Min3(v1.position.Y, v2.position.Y, v3.position.Y);
 	double maxX = WindyMath::Max3(v1.position.X, v2.position.X, v3.position.X);
 	double maxY = WindyMath::Max3(v1.position.Y, v2.position.Y, v3.position.Y);
 
-	/*
 	// Clip against screen bounds
 	minX = max(minX, 0);
 	minY = max(minY, 0);
-	maxX = min(maxX, screenWidth - 1);
-	maxY = min(maxY, screenHeight - 1);
-	*/
+	maxX = min(maxX, resolution.X - 1);
+	maxY = min(maxY, resolution.Y - 1);
 
 	double A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
 	double A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;

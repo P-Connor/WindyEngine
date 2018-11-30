@@ -100,7 +100,7 @@ MainWindow::MainWindow()
 	}
 	resolution = Vector2<int>(CW_USEDEFAULT, CW_USEDEFAULT);
 	camera = Camera(resolution);
-	graphics = Graphics(hdc, resolution);
+	graphics = new Graphics(hdc, resolution);
 }
 
 MainWindow::MainWindow(
@@ -118,7 +118,12 @@ MainWindow::MainWindow(
 	}
 	resolution = Vector2<int>(w, h);
 	camera = Camera(resolution);
-	graphics = Graphics(hdc, resolution);
+	graphics = new Graphics(hdc, resolution);
+}
+
+MainWindow::~MainWindow()
+{
+	delete graphics;
 }
 
 void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {	
@@ -136,7 +141,7 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 			camera.WorldToScreen(modifiedVerts[i]);
 		}
 		for (int i = 0; i < triCount; i++) {
-			graphics.DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
+			graphics->DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Z] );
 			//BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics.GetMemoryHDC(), 0, 0, SRCCOPY);
@@ -144,8 +149,8 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 		}
 	}
 
-	BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics.GetMemoryHDC(), 0, 0, SRCCOPY);
-	graphics.ClearBuffer();
+	BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);
+	graphics->ClearBuffer();
 }
 
 LRESULT MainWindow::HandleMessage(UINT message, WPARAM wParam, LPARAM lParam)

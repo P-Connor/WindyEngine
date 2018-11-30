@@ -11,6 +11,16 @@ public:
 	Graphics(HDC& hdc, const Vector2<int>& _resolution);
 	~Graphics();
 
+	Graphics(const Graphics& g) {
+		memoryHDC = g.memoryHDC;
+		pixelBuffer = g.pixelBuffer;
+		pixelBufferInfo = g.pixelBufferInfo;
+		pixelBufferBytes = g.pixelBufferBytes;
+		zBufferBytes = g.zBufferBytes;
+		resolution = g.resolution;
+		return;
+	}
+
 	const HDC& GetMemoryHDC();
 	void ClearBuffer();
 	void FillPixel(const int&, const int&, const COLORREF&);
@@ -25,6 +35,6 @@ private:
 	HBITMAP pixelBuffer;
 	BITMAPINFO pixelBufferInfo;
 	unsigned char *pixelBufferBytes = 0;
-	int *zBufferBytes = 0;
+	double *zBufferBytes = 0;
 	Vector2<int> resolution;
 };

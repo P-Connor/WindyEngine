@@ -32,7 +32,7 @@ protected:
 	virtual LRESULT HandleMessage(UINT message, WPARAM wParam, LPARAM lParam) = 0;
 	
 	Vector2<int> resolution;
-	Graphics graphics;
+	Graphics *graphics;
 	Camera camera;
 	HWND windowH;
 	HDC hdc;
@@ -49,6 +49,7 @@ public:
 		int w = 50, int h = 50,
 		HWND hWndParent = 0,
 		HMENU hMenu = 0);
+	~MainWindow();
 
 //protected:
 	LPCWSTR winName = L"MainWindow";

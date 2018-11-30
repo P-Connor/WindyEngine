@@ -4,15 +4,15 @@
 Camera::Camera(const Vector2<int>& _resolution)
 {
 	nearP = 1;
-	farP = 10000;
+	farP = 1000;
 
 	aspectRatio = 16.0 / 9;
 	fov = (75 * (2 * 3.14159265359)) / 360;
 
-	projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0	},
-									{0,												1 / WindyMath::Tan(fov / 2),	0,	0	},
-									{0,												0,								1,	1	},
-									{0,												0,								1,	0	}	} };
+	projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0					},
+									{0,												1 / WindyMath::Tan(fov / 2),	0,	0					},
+									{0,												0,								1 / (farP - nearP),	0	},
+									{0,												0,								1,	0	}				} };
 
 	resolution = _resolution;
 
@@ -42,6 +42,6 @@ void Camera::SetFov(const double& deg)
 	fov = (deg * (2 * 3.14159265359)) / 360;
 	projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0	},
 									{0,												1 / WindyMath::Tan(fov / 2),	0,	0	},
-									{0,												0,								1,	1	},
+									{0,												0,								1,	0	},
 									{0,												0,								1,	0	}	} };
 }

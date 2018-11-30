@@ -161,7 +161,7 @@ Vector3<double> Matrix4::MultiplyHomogeneous(const Vector3<double>& vec) const
 	if (W != 0) {
 		ret.X /= W;
 		ret.Y /= W;
-		ret.Z /= W;
+		//ret.Z /= W;
 	}
 
 	return ret;
