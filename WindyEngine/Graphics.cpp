@@ -189,10 +189,6 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 				byte b = GetBValue(v1.color) * p0 + GetBValue(v2.color) * p1 + GetBValue(v3.color) * p2;
 
 				double z = v1.position.Z * p0 + v2.position.Z * p1 + v3.position.Z * p2;
-				
-				if (p.X == minX && p.Y == minY) {
-					WinDebug.Log(z);
-				}
 
 				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
 				
@@ -216,7 +212,7 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 		w2_row += B12;
 	}
 
-	//WinDebug.Log(t1.Value());
+	WinDebug.Log(t1.Value());
 	t1.Reset();
 }
 
