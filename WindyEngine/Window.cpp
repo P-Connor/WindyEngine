@@ -128,23 +128,33 @@ MainWindow::~MainWindow()
 
 void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {	
 	
-	for (int obj = 0; obj < gameObjects.size(); obj++) {
-		const int vertCount = sizeof(gameObjects[obj].mesh.vertices) / sizeof(Vertex3);
-		const int triCount = sizeof(gameObjects[obj].mesh.triangles) / sizeof(Vector3<size_t>);
-		Vertex3 modifiedVerts[vertCount];
+	//Timer triangle, total;
 
-		for (int i = 0; i < vertCount; i++) {
+	for (int obj = 0; obj < gameObjects.size(); obj++) {
+		Vertex3 *modifiedVerts = new Vertex3[gameObjects[obj].mesh.vertCount];
+
+		for (int i = 0; i < gameObjects[obj].mesh.vertCount; i++) {
 			modifiedVerts[i] = gameObjects[obj].mesh.vertices[i];
 			modifiedVerts[i].position = Matrix4::Scale(gameObjects[obj].transform.scale) * modifiedVerts[i].position;
 			modifiedVerts[i].position = Matrix4::RotationDeg(gameObjects[obj].transform.rotation) * modifiedVerts[i].position;
 			modifiedVerts[i].position.Translate(gameObjects[obj].transform.position);
 			camera.WorldToScreen(modifiedVerts[i]);
 		}
-		for (int i = 0; i < triCount; i++) {
+		//triangle.Reset();
+		for (int i = 0; i < gameObjects[obj].mesh.triCount; i++) {
+			
 			graphics->DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Z], camera );
+			//BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);
+			//graphics->ClearBuffer();
 		}
+		//WinDebug.Log(std::to_string(triangle.Value()) + "\t-draw triangle");
+
+		//WinDebug.Log(std::to_string(total.Value() - triangle.Value()) + "\t-other");
+		//total.Reset();
+
+		delete[] modifiedVerts;
 	}
 
 	BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);

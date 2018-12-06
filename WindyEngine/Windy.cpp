@@ -27,6 +27,7 @@ int WINAPI wWinMain(HINSTANCE currentInstanceH, HINSTANCE prevInstaceH, PWSTR pC
 
 Windy::Windy() : mainWin(L"Windy", CS_OWNDC | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)
 {
+	gameObjects.reserve(100);
 	Begin();
 }
 
@@ -35,6 +36,7 @@ Windy::Windy(LPCWSTR displayT, int w, int h) : mainWin( displayT,
 														0, 5, 35,
 														w, h)
 {
+	gameObjects.reserve(100);
 	Begin();
 }
 
@@ -49,16 +51,14 @@ void Windy::Loop() {
 	WInput.UpdateKeys();
 	Update();
 
-
-	//WinDebug.Log("Seconds: " + std::to_string(secondsTimer.Value() / 1000000000.0));
 	frames++;
 	deltaTime = framerateTimer.Value() / 100000000.0;
 	if (secondsTimer.Value() > 1000000000) {
 		frameRate = frames;
+		//WinDebug.Log(frameRate);
 		frames = 0;
 		secondsTimer.Reset();
 	}
-	//WinDebug.Log(frameRate);
 	framerateTimer.Reset();
 }
 

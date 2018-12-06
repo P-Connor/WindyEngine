@@ -148,15 +148,94 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 
 }
 
-void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3, const Camera& camera)
+void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3, const Camera& camera)
 {
 	static Timer t1;
 
+	Vertex3 v1 = vertex1, v2 = vertex2, v3 = vertex3;
+	if (v1.position.Y > v2.position.Y) {
+		std::swap(v1, v2);
+	}
+	if (v1.position.Y > v3.position.Y) {
+		std::swap(v1, v3);
+	}
+	if (v2.position.Y > v3.position.Y) {
+		std::swap(v2, v3);
+	}
+
+	float A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
+	float A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
+	float A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
+
+	// Rasterize
+	Vector2<int> p((int)v1.position.X, (int)v1.position.Y);
+	float w0_row = (A23)* p.X + (B23)* p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
+	float w1_row = (A31)* p.X + (B31)* p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
+	float w2_row = (A12)* p.X + (B12)* p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
+
+	float w0 = w0_row, w1 = w1_row, w2 = w2_row;
+	float area;
+	float p0, p1, p2;
+	float z;
+	int incX = 1;
+
+	for (p.Y = (int)v1.position.Y; p.Y <= (int)v3.position.Y; p.Y++) {
+
+		//Move back to unfillable tile
+		while (w0 < 0 && w1 < 0 && w2 < 0) {
+			w0 += A23 * incX;
+			w1 += A31 * incX;
+			w2 += A12 * incX;
+			p.X += incX;
+		}
+		incX *= -1;
+
+		do {
+			// If p is on or inside all edges, render pixel.
+			if (w0 < 0 && w1 < 0 && w2 < 0) {
+				area = w0 + w1 + w2;
+				p0 = w0 / area, p1 = w1 / area, p2 = w2 / area;
+				byte r = GetRValue(v1.color) * p0 + GetRValue(v2.color) * p1 + GetRValue(v3.color) * p2;
+				byte g = GetGValue(v1.color) * p0 + GetGValue(v2.color) * p1 + GetGValue(v3.color) * p2;
+				byte b = GetBValue(v1.color) * p0 + GetBValue(v2.color) * p1 + GetBValue(v3.color) * p2;
+
+				z = v1.position.Z * p0 + v2.position.Z * p1 + v3.position.Z * p2;
+
+				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
+
+				if (zBufferBytes[p.Y * resolution.X + p.X] >= z && z > 0 && z < 1) {
+					zBufferBytes[p.Y * resolution.X + p.X] = z;
+					FillPixel(p.X, p.Y, RGB(r, g, b));
+				}
+			}
+
+			//One step to the left/right
+			w0 += A23 * incX;
+			w1 += A31 * incX;
+			w2 += A12 * incX;
+			p.X += incX;
+
+		} while (p.X < 960 && p.X > 0);
+
+		// One row step
+		w0 += B23;
+		w1 += B31;
+		w2 += B12;
+	}
+
+	DrawLine(vertex1.position.X, vertex1.position.Y, vertex2.position.X, vertex2.position.Y, RGB(255, 255, 255));
+	DrawLine(vertex2.position.X, vertex2.position.Y, vertex3.position.X, vertex3.position.Y, RGB(255, 255, 255));
+	DrawLine(vertex1.position.X, vertex1.position.Y, vertex3.position.X, vertex3.position.Y, RGB(255, 255, 255));
+
+	//WinDebug.Log(t1.Value());
+	t1.Reset();
+	
+	/*
 	// Compute triangle bounding box
-	double minX = WindyMath::Min3(v1.position.X, v2.position.X, v3.position.X);
-	double minY = WindyMath::Min3(v1.position.Y, v2.position.Y, v3.position.Y);
-	double maxX = WindyMath::Max3(v1.position.X, v2.position.X, v3.position.X);
-	double maxY = WindyMath::Max3(v1.position.Y, v2.position.Y, v3.position.Y);
+	int minX = WindyMath::Min3(v1.position.X, v2.position.X, v3.position.X);
+	int minY = WindyMath::Min3(v1.position.Y, v2.position.Y, v3.position.Y);
+	int maxX = WindyMath::Max3(v1.position.X, v2.position.X, v3.position.X);
+	int maxY = WindyMath::Max3(v1.position.Y, v2.position.Y, v3.position.Y);
 
 	// Clip against screen bounds
 	minX = max(minX, 0);
@@ -164,38 +243,43 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 	maxX = min(maxX, resolution.X - 1);
 	maxY = min(maxY, resolution.Y - 1);
 
-	double A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
-	double A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
-	double A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
+	float A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
+	float A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
+	float A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
 
 	// Rasterize
-	Vector2<double> p(minX, minY);
-	double w0_row = (A23)* p.X + (B23)* p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
-	double w1_row = (A31)* p.X + (B31)* p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
-	double w2_row = (A12)* p.X + (B12)* p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
+	Vector2<int> p(minX, minY);
+	float w0_row = (A23)* p.X + (B23)* p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
+	float w1_row = (A31)* p.X + (B31)* p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
+	float w2_row = (A12)* p.X + (B12)* p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
+
+	float w0, w1, w2;
+	float area;
+	float p0, p1, p2;
+	float z;
 
 	for (p.Y = minY; p.Y <= maxY; p.Y++) {
 		
-		double w0 = w0_row, w1 = w1_row, w2 = w2_row;
+		w0 = w0_row;
+		w1 = w1_row;
+		w2 = w2_row;
 
 		for (p.X = minX; p.X <= maxX; p.X++) {
-			
 			// If p is on or inside all edges, render pixel.
-			if (w0 <= 0 && w1 <= 0 && w2 <= 0) {
-				double area = w0 + w1 + w2;
-				double p0 = w0 / area, p1 = w1 / area, p2 = w2 / area;
+			if (w0 < 0 && w1 < 0 && w2 < 0) {
+				area = w0 + w1 + w2;
+				p0 = w0 / area, p1 = w1 / area, p2 = w2 / area;
 				byte r = GetRValue(v1.color) * p0 + GetRValue(v2.color) * p1 + GetRValue(v3.color) * p2;
 				byte g = GetGValue(v1.color) * p0 + GetGValue(v2.color) * p1 + GetGValue(v3.color) * p2;
 				byte b = GetBValue(v1.color) * p0 + GetBValue(v2.color) * p1 + GetBValue(v3.color) * p2;
 
-				double z = v1.position.Z * p0 + v2.position.Z * p1 + v3.position.Z * p2;
+				z = v1.position.Z * p0 + v2.position.Z * p1 + v3.position.Z * p2;
 
 				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
 				
-				if (zBufferBytes[(int)p.Y * resolution.X + (int)p.X] >= z && z > 0 && z < 1) {
-					zBufferBytes[(int)p.Y * resolution.X + (int)p.X] = z;
+				if (zBufferBytes[p.Y * resolution.X + p.X] >= z && z > 0 && z < 1) {
+					zBufferBytes[p.Y * resolution.X + p.X] = z;
 					FillPixel(p.X, p.Y, RGB(r, g, b));
-					
 				}
 			}
 
@@ -212,8 +296,9 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 		w2_row += B12;
 	}
 
-	WinDebug.Log(t1.Value());
+	//WinDebug.Log(t1.Value());
 	t1.Reset();
+	*/
 }
 
 void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3)

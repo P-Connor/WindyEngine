@@ -2,11 +2,17 @@
 //#include "Input.h"
 
 void Windy::Begin() {
-	GameObject cube1, cube2;
+	GameObject cube1, cube2, cube3, cube4, cube5;
 	cube1.transform.position = Vector3<double>(0, 0, 4);
 	cube2.transform.position = Vector3<double>(5, 2, 10);
+	cube3.transform.position = Vector3<double>(-5, 2, 10);
+	cube4.transform.position = Vector3<double>(5, -2, 10);
+	cube5.transform.position = Vector3<double>(-5, -2, 10);
 	AddGameObject(cube1);
 	AddGameObject(cube2);
+	AddGameObject(cube3);
+	AddGameObject(cube4);
+	AddGameObject(cube5);
 }
 	
 void Windy::Update() {

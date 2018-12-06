@@ -38,4 +38,7 @@ Cube::Cube()
 	vertices[5].color = RGB(255, 0, 255);
 	vertices[6].color = RGB(255, 255, 0);
 	vertices[7].color = RGB(255, 255, 255);
+
+	vertCount = 8;
+	triCount = 12;
 }

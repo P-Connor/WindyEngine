@@ -11,4 +11,6 @@ public:
 //private:
 	Vertex3 vertices[8];
 	Vector3<size_t> triangles[12];
+	unsigned int vertCount = 8;
+	unsigned int triCount = 12;
 };
