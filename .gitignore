@@ -261,4 +261,4 @@ __pycache__/
 *.pyc
 
 #log files generated
-*.txt
+WinDebug.txt
