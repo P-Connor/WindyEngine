@@ -148,7 +148,7 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 
 }
 
-void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3)
+void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3, const Camera& camera)
 {
 	static Timer t1;
 
@@ -192,9 +192,10 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 
 				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
 				
-				if (zBufferBytes[(int)p.Y * resolution.X + (int)p.X] >= z) {
+				if (zBufferBytes[(int)p.Y * resolution.X + (int)p.X] >= z && z > 0 && z < 1) {
 					zBufferBytes[(int)p.Y * resolution.X + (int)p.X] = z;
 					FillPixel(p.X, p.Y, RGB(r, g, b));
+					
 				}
 			}
 
@@ -211,7 +212,7 @@ void Graphics::DrawTriangle(const Vertex3& v1, const Vertex3& v2, const Vertex3&
 		w2_row += B12;
 	}
 
-	WinDebug.Log(t1.Value());
+	//WinDebug.Log(t1.Value());
 	t1.Reset();
 }
 

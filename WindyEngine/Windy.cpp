@@ -58,7 +58,7 @@ void Windy::Loop() {
 		frames = 0;
 		secondsTimer.Reset();
 	}
-	//WinDebug.Log(frameRate);
+	WinDebug.Log(frameRate);
 	framerateTimer.Reset();
 }
 
