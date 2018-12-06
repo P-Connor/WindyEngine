@@ -43,8 +43,8 @@ void Camera::UpdProjection()
 	case PERSPECTIVE:
 		projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0					},
 										{0,												1 / WindyMath::Tan(fov / 2),	0,	0					},
-										{0,												0,								1 / (farP - nearP),	0	},
-										{0,												0,								1,	0	}				} };
+										{0,												0,								1 / (farP - nearP),	-nearP / (farP - nearP)	},
+										{0,												0,								1,	0					}	} };
 		break;
 	
 	case ORTHOGRAPHIC:
