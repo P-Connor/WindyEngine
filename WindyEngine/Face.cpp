@@ -18,6 +18,6 @@ Face::Face()
 
 	vertices[0].color = RGB(255, 0, 0);
 	vertices[1].color = RGB(0, 255, 0);
-	vertices[2].color = RGB(0, 255, 0);
+	vertices[2].color = RGB(255, 0, 255);
 	vertices[3].color = RGB(0, 0, 255);
 }

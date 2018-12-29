@@ -148,18 +148,25 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 
 }
 
-void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3, const Camera& camera)
+void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 {
-	static Timer t1;
+	static Timer t1, rows, pixels;
+	t1.Reset();
 
-	Vertex3 v1 = vertex1, v2 = vertex2, v3 = vertex3;
+	if (!isCounterClockwise(v1, v2, v3)) {
+		return;
+	}
+	bool isCC = true;
+
 	if (v1.position.Y > v2.position.Y) {
 		std::swap(v1, v2);
+		isCC = !isCC;
 	}
 	if (v1.position.Y > v3.position.Y) {
 		std::swap(v1, v3);
+		isCC = !isCC;
 	}
-	if (v2.position.Y > v3.position.Y) {
+	if (!isCC) {
 		std::swap(v2, v3);
 	}
 
@@ -167,19 +174,23 @@ void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, cons
 	float A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
 	float A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
 
-	// Rasterize
 	Vector2<int> p((int)v1.position.X, (int)v1.position.Y);
-	float w0_row = (A23)* p.X + (B23)* p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
-	float w1_row = (A31)* p.X + (B31)* p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
-	float w2_row = (A12)* p.X + (B12)* p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
+	float w0 = A23 * p.X + B23 * p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
+	float w1 = A31 * p.X + B31 * p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
+	float w2 = A12 * p.X + B12 * p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
 
-	float w0 = w0_row, w1 = w1_row, w2 = w2_row;
-	float area;
+	//float w0 = w0_row, w1 = w1_row, w2 = w2_row;
+	float area = w0 + w1 + w2;;
 	float p0, p1, p2;
 	float z;
-	int incX = 1;
+	int incX = (v1.position.X < v2.position.X) ? 1 : -1;
+	bool inside = true;
 
-	for (p.Y = (int)v1.position.Y; p.Y <= (int)v3.position.Y; p.Y++) {
+	//WinDebug.Log(std::to_string(t1.Value()) + "\t init");
+
+	for (p.Y = (int)v1.position.Y; (p.Y <= (int)v3.position.Y || p.Y <= (int)v2.position.Y); p.Y++) {
+		
+		//rows.Reset();
 
 		//Move back to unfillable tile
 		while (w0 < 0 && w1 < 0 && w2 < 0) {
@@ -191,44 +202,61 @@ void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, cons
 		incX *= -1;
 
 		do {
-			// If p is on or inside all edges, render pixel.
-			if (w0 < 0 && w1 < 0 && w2 < 0) {
-				area = w0 + w1 + w2;
-				p0 = w0 / area, p1 = w1 / area, p2 = w2 / area;
-				byte r = GetRValue(v1.color) * p0 + GetRValue(v2.color) * p1 + GetRValue(v3.color) * p2;
-				byte g = GetGValue(v1.color) * p0 + GetGValue(v2.color) * p1 + GetGValue(v3.color) * p2;
-				byte b = GetBValue(v1.color) * p0 + GetBValue(v2.color) * p1 + GetBValue(v3.color) * p2;
-
-				z = v1.position.Z * p0 + v2.position.Z * p1 + v3.position.Z * p2;
-
-				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
-
-				if (zBufferBytes[p.Y * resolution.X + p.X] >= z && z > 0 && z < 1) {
-					zBufferBytes[p.Y * resolution.X + p.X] = z;
-					FillPixel(p.X, p.Y, RGB(r, g, b));
-				}
-			}
-
+			//pixels.Reset();
+			
 			//One step to the left/right
 			w0 += A23 * incX;
 			w1 += A31 * incX;
 			w2 += A12 * incX;
 			p.X += incX;
+			
+			// If p is on or inside all edges, render pixel.
+			if (w0 < 0 && w1 < 0 && w2 < 0) {
+				//WinDebug.Log(std::to_string(pixels.Value()) + "\t check");
+				inside = true;
+				
+				p0 = w0 / area, p1 = w1 / area, p2 = w2 / area;
+				z = v1.position.Z * p0 + v2.position.Z * p1 + v3.position.Z * p2;
 
-		} while (p.X < 960 && p.X > 0);
+				//WinDebug.Log(std::to_string(pixels.Value()) + "\t calc");
+
+				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
+
+				if (zBufferBytes[p.Y * resolution.X + p.X] >= z && z > 0 && z < 1) {
+					
+					zBufferBytes[p.Y * resolution.X + p.X] = z;
+					
+					byte r = GetRValue(v1.color) * p0 + GetRValue(v2.color) * p1 + GetRValue(v3.color) * p2;
+					byte g = GetGValue(v1.color) * p0 + GetGValue(v2.color) * p1 + GetGValue(v3.color) * p2;
+					byte b = GetBValue(v1.color) * p0 + GetBValue(v2.color) * p1 + GetBValue(v3.color) * p2;
+					
+					FillPixel(p.X, p.Y, RGB(r, g, b));
+				}
+
+				//WinDebug.Log(std::to_string(pixels.Value()) + "\t fill");
+			}
+			else if (inside == true){
+				inside = false;
+				break;
+			}
+
+			//WinDebug.Log(std::to_string(p.X) + "\t X");
+			//WinDebug.Log(p.X);
+
+		} while (p.X < resolution.X && p.X > 0);
 
 		// One row step
 		w0 += B23;
 		w1 += B31;
 		w2 += B12;
+		//WinDebug.Log(std::to_string(rows.Value()) + "\t row");
+
+
 	}
 
-	DrawLine(vertex1.position.X, vertex1.position.Y, vertex2.position.X, vertex2.position.Y, RGB(255, 255, 255));
-	DrawLine(vertex2.position.X, vertex2.position.Y, vertex3.position.X, vertex3.position.Y, RGB(255, 255, 255));
-	DrawLine(vertex1.position.X, vertex1.position.Y, vertex3.position.X, vertex3.position.Y, RGB(255, 255, 255));
+	WinDebug.Log(t1.Value());
 
-	//WinDebug.Log(t1.Value());
-	t1.Reset();
+
 	
 	/*
 	// Compute triangle bounding box
@@ -295,10 +323,10 @@ void Graphics::DrawTriangle(const Vertex3& vertex1, const Vertex3& vertex2, cons
 		w1_row += B31;
 		w2_row += B12;
 	}
+	*/
 
 	//WinDebug.Log(t1.Value());
-	t1.Reset();
-	*/
+	
 }
 
 void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& vertex2, const Vertex3& vertex3)
@@ -580,6 +608,12 @@ void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& verte
 		}
 
 	}
+}
+
+bool Graphics::isCounterClockwise(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3)
+{
+	//compare slopes of vectors v1v2 and v2v3
+	return (((v2.position.Y - v1.position.Y)*(v3.position.X - v2.position.X) - (v3.position.Y - v2.position.Y)*(v2.position.X - v1.position.X)) >= 0 ? true : false);
 }
 
 

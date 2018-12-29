@@ -27,8 +27,9 @@ public:
 	COLORREF GetPixel(const int&, const int&);
 	void DrawLine(const Vector2<int>&, const Vector2<int>&, const COLORREF&);
 	void DrawLine(const int&, const int&, const int&, const int&, const COLORREF&);
-	void DrawTriangle(const Vertex3&, const Vertex3&, const Vertex3&, const Camera& camera);
+	void DrawTriangle(Vertex3, Vertex3, Vertex3);
 	void DrawTriangleScanline(const Vertex3&, const Vertex3&, const Vertex3&);
+	bool isCounterClockwise(const Vertex3&, const Vertex3&, const Vertex3&);
 
 private:
 	HDC memoryHDC;
