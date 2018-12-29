@@ -65,6 +65,9 @@
     <ClCompile Include="Vertex3.cpp">
       <Filter>Rendering Classes</Filter>
     </ClCompile>
+    <ClCompile Include="Face.cpp">
+      <Filter>Primitive Meshes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector2.h">
@@ -117,6 +120,9 @@
     </ClInclude>
     <ClInclude Include="Vertex3.h">
       <Filter>Rendering Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Face.h">
+      <Filter>Primitive Meshes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

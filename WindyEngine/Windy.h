@@ -16,7 +16,7 @@ public:
 	void Update();
 	
 	MainWindow& GetMainWindow();
-	void AddGameObject(GameObject&);
+	void AddGameObject(const GameObject&);
 
 	unsigned int FrameRate();
 	double DeltaTime();

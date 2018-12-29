@@ -7,10 +7,13 @@ class Mesh : Component {
 
 public: 
 	Mesh();
+	~Mesh();
+
+	Mesh(const Mesh&);
+	Mesh& operator=(const Mesh&);
 
 //private:
-	Vertex3 vertices[8];
-	Vector3<size_t> triangles[12];
-	unsigned int vertCount = 8;
-	unsigned int triCount = 12;
+	Vertex3 *vertices;
+	Vector3<size_t> *triangles;
+	unsigned int vertCount, triCount;
 };

@@ -10,6 +10,7 @@ void GameObject::AddComponent()
 }
 
 GameObject::GameObject()
+	: mesh(Cube())
 {
 	//AddComponent<Transform>();
 }

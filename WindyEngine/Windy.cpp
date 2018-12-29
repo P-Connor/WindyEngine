@@ -66,7 +66,7 @@ MainWindow& Windy::GetMainWindow() {
 	return mainWin;
 }
 
-void Windy::AddGameObject(GameObject& gObj)
+void Windy::AddGameObject(const GameObject& gObj)
 {
 	gameObjects.push_back(gObj);
 }

@@ -3,6 +3,7 @@
 #include "Transform.h"
 #include "Mesh.h"
 #include "Cube.h"
+#include "Face.h"
 #include <vector>
 
 class GameObject {
@@ -14,7 +15,7 @@ public:
 	void AddComponent();
 
 	Transform transform;
-	Mesh mesh = Cube();
+	Mesh mesh;
 
 private:
 	std::vector<Component> components;

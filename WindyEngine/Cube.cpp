@@ -2,6 +2,11 @@
 
 Cube::Cube()
 {
+	vertCount = 8;
+	triCount = 12;
+	vertices = new Vertex3[vertCount];
+	triangles = new Vector3<size_t>[triCount];
+	
 	vertices[0].position = Vector3<double>(0.5, 0.5, 0.5);
 	vertices[1].position = Vector3<double>(0.5, 0.5, -0.5);
 	vertices[2].position = Vector3<double>(0.5, -0.5, 0.5);
@@ -38,7 +43,4 @@ Cube::Cube()
 	vertices[5].color = RGB(255, 0, 255);
 	vertices[6].color = RGB(255, 255, 0);
 	vertices[7].color = RGB(255, 255, 255);
-
-	vertCount = 8;
-	triCount = 12;
 }
