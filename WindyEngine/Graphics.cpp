@@ -254,7 +254,7 @@ void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 
 	}
 
-	WinDebug.Log(t1.Value());
+	//WinDebug.Log(t1.Value());
 
 
 	

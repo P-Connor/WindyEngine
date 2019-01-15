@@ -1,23 +1,30 @@
 #include "Windy.h"
 #include "Face.h"
 
+//Called once at startup, used to initialize objects and scenes
 void Windy::Begin() {
-	GameObject cube1;//, cube2, cube3, cube4, cube5;
+	GameObject cube1;
 	cube1.transform.position = Vector3<double>(0.0, 0.0, 4.0);
 	cube1.transform.rotation = Vector3<double>(0, 180, 0);
 	cube1.mesh = Face();
-	//cube2.transform.position = Vector3<double>(4, 2, 10);
-	//cube3.transform.position = Vector3<double>(4, -2, 10);
-	//cube4.transform.position = Vector3<double>(-4, 2, 10);
-	//cube5.transform.position = Vector3<double>(-4, -2, 10);
-
 	AddGameObject(cube1);
-	//AddGameObject(cube2);
-	//AddGameObject(cube3);
-	//AddGameObject(cube4);
-	//AddGameObject(cube5);
+
+
+	GameObject cube2, cube3, cube4, cube5;;
+
+	cube2.transform.position = Vector3<double>(4, 2, 10);
+	cube3.transform.position = Vector3<double>(4, -2, 10);
+	cube4.transform.position = Vector3<double>(-4, 2, 10);
+	cube5.transform.position = Vector3<double>(-4, -2, 10);
+	
+	AddGameObject(cube2);
+	AddGameObject(cube3);
+	AddGameObject(cube4);
+	AddGameObject(cube5);
+	
 }
 	
+//Called once per frame
 void Windy::Update() {
 	static double angle[] = { 0,180,0 }, angleInc = 1;
 

@@ -25,12 +25,14 @@ int WINAPI wWinMain(HINSTANCE currentInstanceH, HINSTANCE prevInstaceH, PWSTR pC
 	return 0;
 }
 
+//Constructs the engine by default
 Windy::Windy() : mainWin(L"Windy", CS_OWNDC | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)
 {
 	gameObjects.reserve(100);
 	Begin();
 }
 
+//Constructs the engine with more control over parameters such as window width and height
 Windy::Windy(LPCWSTR displayT, int w, int h) : mainWin( displayT, 
 														CS_OWNDC | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 														0, 5, 35,
@@ -40,6 +42,8 @@ Windy::Windy(LPCWSTR displayT, int w, int h) : mainWin( displayT,
 	Begin();
 }
 
+//The main update loop of the engine, called once per frame
+//Not to be confused with Update(), Loop() handles all of the "low level" events of the engine per frame
 void Windy::Loop() {
 	static Timer framerateTimer, secondsTimer;
 	static long frames = 0;
@@ -62,20 +66,25 @@ void Windy::Loop() {
 	framerateTimer.Reset();
 }
 
+//Returns a reference to the main window of the engine
 MainWindow& Windy::GetMainWindow() {
 	return mainWin;
 }
 
+//Adds a gameobject to the scene by copying
 void Windy::AddGameObject(const GameObject& gObj)
 {
 	gameObjects.push_back(gObj);
 }
 
+//Returns the current framerate
+//Note: framerate is only updated once per second
 unsigned int Windy::FrameRate()
 {
 	return frameRate;
 }
 
+//Returns the time in seconds that the last frame took to execute
 double Windy::DeltaTime()
 {
 	return deltaTime;
