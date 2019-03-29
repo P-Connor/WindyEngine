@@ -222,7 +222,7 @@ void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 
 				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
 
-				if (zBufferBytes[p.Y * resolution.X + p.X] >= z && z > 0 && z < 1) {
+				if ((p.Y * resolution.X + p.X) >= 0 && (p.Y * resolution.X + p.X) < (resolution.X * resolution.Y) && zBufferBytes[p.Y * resolution.X + p.X] >= z && z > 0 && z < 1) {
 					
 					zBufferBytes[p.Y * resolution.X + p.X] = z;
 					

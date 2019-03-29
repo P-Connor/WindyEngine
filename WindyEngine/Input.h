@@ -27,7 +27,7 @@ public:
 
 	inline bool KeyDown(const unsigned int& k) { return keys[k - 1].isDown; }
 	inline bool KeyHeld(const unsigned int& k) { return keys[k - 1].isHeld; }
-	inline bool KeyUp(	const unsigned int& k) { return keys[k - 1].isUp; }
+	inline bool KeyUp  (const unsigned int& k) { return keys[k - 1].isUp; }
 
 	Key* GetKey(const unsigned int&);
 	void UpdateKeys();
