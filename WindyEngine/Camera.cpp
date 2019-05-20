@@ -41,17 +41,32 @@ void Camera::UpdProjection()
 	switch (mode) {
 	
 	case PERSPECTIVE:
-		projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0					},
-										{0,												1 / WindyMath::Tan(fov / 2),	0,	0					},
-										{0,												0,								1 / (farP - nearP),	-nearP / (farP - nearP)	},
-										{0,												0,								1,	0					}	} };
+		/* { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,					0						},
+				{0,												1 / WindyMath::Tan(fov / 2),	0,					0						},
+				{0,												0,								1 / (farP - nearP),	-nearP / (farP - nearP)	},
+				{0,												0,								1,					0						}	} }; */
+		
+		projectionMatrix = Matrix4();
+		projectionMatrix[0][0] = 1 / (aspectRatio * WindyMath::Tan(fov / 2));
+		projectionMatrix[1][1] = 1 / WindyMath::Tan(fov / 2);
+		projectionMatrix[2][2] = 1 / (farP - nearP);
+		projectionMatrix[2][3] = -nearP / (farP - nearP);
+		projectionMatrix[3][2] = 1;
+		
 		break;
 	
 	case ORTHOGRAPHIC:
-		projectionMatrix.matrix = { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0					},
-										{0,												1 / WindyMath::Tan(fov / 2),	0,	0					},
-										{0,												0,								1,	0	},
-										{0,												0,								0,	1	}				} };
+		/* { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0	},
+				{0,												1 / WindyMath::Tan(fov / 2),	0,	0	},
+				{0,												0,								1,	0	},
+				{0,												0,								0,	1	}	} }; */
+		
+		projectionMatrix = Matrix4();
+		projectionMatrix[0][0] = 1 / (aspectRatio * WindyMath::Tan(fov / 2));
+		projectionMatrix[1][1] = 1 / WindyMath::Tan(fov / 2);
+		projectionMatrix[2][2] = 1;
+		projectionMatrix[3][3] = 1;
+		
 		break;	
 	}
 

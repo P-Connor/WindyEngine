@@ -127,24 +127,27 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {	
-	
-	unsigned tris = 0;
-	//Timer triangle, total;
+	//Timer total;
+	//unsigned last;
 
 	for (int obj = 0; obj < gameObjects.size(); obj++) {
 		Vertex3 *modifiedVerts = new Vertex3[gameObjects[obj].mesh.vertCount];
 
+		//last = total.Value();
+		//WinDebug.Log(std::to_string(last) + "\t-allocated");
+
 		for (int i = 0; i < gameObjects[obj].mesh.vertCount; i++) {
 			modifiedVerts[i] = gameObjects[obj].mesh.vertices[i];
-			modifiedVerts[i].position = Matrix4::Scale(gameObjects[obj].transform.scale) * modifiedVerts[i].position;
+			modifiedVerts[i].position *= gameObjects[obj].transform.scale;
 			modifiedVerts[i].position = Matrix4::RotationDeg(gameObjects[obj].transform.rotation) * modifiedVerts[i].position;
 			modifiedVerts[i].position.Translate(gameObjects[obj].transform.position);
 			camera.WorldToScreen(modifiedVerts[i]);
-
 		}
-		//triangle.Reset();
+		
+		//WinDebug.Log(std::to_string(total.Value()-last));
+		//last = total.Value();
+
 		for (int i = 0; i < gameObjects[obj].mesh.triCount; i++) {
-			tris++;
 			graphics->DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Z]);
@@ -155,16 +158,18 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 			//BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);
 			//graphics->ClearBuffer();
 		}
-		//WinDebug.Log(std::to_string(triangle.Value()) + "\t-draw triangle");
-
-		//WinDebug.Log(std::to_string(total.Value() - triangle.Value()) + "\t-other");
-		//total.Reset();
-		WinDebug.Log(tris);
+		
+		//WinDebug.Log(std::to_string(total.Value()-last) + "\t-drew triangles");
+		//last = total.Value();
+		
+		//WinDebug.Log(tris);
 		delete[] modifiedVerts;
 	}
 
 	BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);
 	graphics->ClearBuffer();
+
+	//WinDebug.Log(std::to_string(total.Value()-last) + "\t-finished");
 }
 
 LRESULT MainWindow::HandleMessage(UINT message, WPARAM wParam, LPARAM lParam)

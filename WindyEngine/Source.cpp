@@ -4,10 +4,14 @@
 
 //Called once at startup, used to initialize objects and scenes
 void Windy::Begin() {
+
+	//GetMainWindow().camera.UpdProjection(ORTHOGRAPHIC);
+
 	GameObject anvil;
 	anvil.mesh = Mesh("C:\\Users\\Colloquiem\\Desktop\\Anvil2.obj");
 	anvil.transform.position = Vector3<double>(0.0, 0.0, 20.0);
 	anvil.transform.rotation = Vector3<double>(0, 0, 0);
+	//anvil.transform.scale = Vector3<double>(.5, 1, 1);
 	AddGameObject(anvil);
 
 	/*GameObject target;

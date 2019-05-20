@@ -4,10 +4,10 @@
 
 class Matrix4 {
 public:
-	Matrix4();
+	Matrix4() : matrix() {};
 
-	std::array<double, 4>& operator[] (unsigned short i) { return matrix[i]; }
-	const std::array<double, 4>& operator[] (unsigned short i) const { return matrix[i]; }
+	double* operator[] (unsigned short i) { return matrix[i]; }
+	const double* operator[] (unsigned short i) const { return matrix[i]; }
 
 	Matrix4 operator* (const Matrix4&) const;
 	Vector3<double> operator* (const Vector3<double>&) const;
@@ -29,5 +29,5 @@ public:
 	Vector3<double> MultiplyHomogeneous(const Vector3<double>&) const;
 
 //protected:
-	std::array<std::array<double, 4>, 4> matrix;
+	double matrix[4][4];
 };

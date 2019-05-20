@@ -19,7 +19,7 @@ Debug::~Debug()
 		sum += num;
 		count++;
 	}
-	ofstream << "Average: " << sum / count;
+	ofstream << "Average: " << (double)sum / count;
 	ifstream.close();
 	
 	ofstream.close();

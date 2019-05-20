@@ -1,14 +1,5 @@
 #include "Matrix4.h"
 
-Matrix4::Matrix4()
-{
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			matrix[i][j] = 0;
-		}
-	}
-}
-
 Matrix4 Matrix4::operator*(const Matrix4& matrix2) const
 {
 	Matrix4 ret;
@@ -38,62 +29,99 @@ Vector3<double> Matrix4::operator*(const Vector3<double>& vec) const
 
 Matrix4 Matrix4::Identity()
 {
+	/* {	1, 0, 0, 0 ,
+			0, 1, 0, 0 ,
+			0, 0, 1, 0 ,
+			0, 0, 0, 1   } */
+	
 	Matrix4 ret;
-	ret.matrix = { {{ 1, 0, 0, 0 },
-					{ 0, 1, 0, 0 },
-					{ 0, 0, 1, 0 },
-					{ 0, 0, 0, 1 }} };
+	ret[0][0] = 1;
+	ret[1][1] = 1;
+	ret[2][2] = 1;
+	ret[3][3] = 1;
 	return ret;
 }
 
 Matrix4 Matrix4::Translation(const Vector3<double>& vec)
 {
+
+	/* {	{ 0, 0, 0, vec.X },
+			{ 0, 0, 0, vec.Y },
+			{ 0, 0, 0, vec.Z },
+			{ 0, 0, 0, 1	 } }; */
+
 	Matrix4 ret;
-	ret.matrix = { {{ 0, 0, 0, vec.X },
-					{ 0, 0, 0, vec.Y },
-					{ 0, 0, 0, vec.Z },
-					{ 0, 0, 0, 1	 }} };
+	ret[0][3] = vec.X;
+	ret[1][3] = vec.Y;
+	ret[2][3] = vec.Z;
+	ret[3][3] = 1;
 	return ret;
 }
 
 Matrix4 Matrix4::Translation(const double& x, const double& y, const double& z)
 {
+	/* {	{ 0, 0, 0, x },
+			{ 0, 0, 0, y },
+			{ 0, 0, 0, z },
+			{ 0, 0, 0, 1	 } }; */
+
 	Matrix4 ret;
-	ret.matrix = { {{ 0, 0, 0, x },
-					{ 0, 0, 0, y },
-					{ 0, 0, 0, z },
-					{ 0, 0, 0, 1 }} };
+	ret[0][3] = x;
+	ret[1][3] = y;
+	ret[2][3] = z;
+	ret[3][3] = 1;
 	return ret;
 }
 
 Matrix4 Matrix4::RotationX(const double& radians)
 {
+	/* { {	{ 1,	0,				0,				0 },
+			{ 0,	cos(radians),	sin(radians),	0 },
+			{ 0,	-sin(radians),	cos(radians),	0 },
+			{ 0,	0,				0,				1 }} }; */
+	
 	Matrix4 ret;
-	ret.matrix = { {{ 1,	0,				0,				0 },
-					{ 0,	cos(radians),	sin(radians),	0 },
-					{ 0,	-sin(radians),	cos(radians),	0 },
-					{ 0,	0,				0,				1 }} };
+	ret[0][0] = 1;
+	ret[1][1] = cos(radians);
+	ret[1][2] = sin(radians);
+	ret[2][1] = -sin(radians);
+	ret[2][2] = cos(radians);
+	ret[3][3] = 1;
 	return ret;
 };
 
 Matrix4 Matrix4::RotationY(const double& radians)
 {
+	/* { {	{ cos(radians),	0,	-sin(radians),	0 },
+			{ 0,			1,	0,				0 },
+			{ sin(radians), 0,	cos(radians),	0 },
+			{ 0,			0,	0,				1 }} }; */
+	
 	Matrix4 ret;
-	ret.matrix = { {{ cos(radians),	0,	-sin(radians),	0 },
-					{ 0,			1,	0,				0 },
-					{ sin(radians), 0,	cos(radians),	0 },
-					{ 0,			0,	0,				1 }} };
+	ret[0][0] = cos(radians);
+	ret[0][2] = -sin(radians);
+	ret[1][1] = 1;
+	ret[2][0] = sin(radians);
+	ret[2][2] = cos(radians);
+	ret[3][3] = 1;
 	return ret;
 }
 
 Matrix4 Matrix4::RotationZ(const double& radians)
 {
-	Matrix4 ret;
-	ret.matrix = { {{ cos(radians),		sin(radians),	0, 0 },
-					{ -sin(radians),	cos(radians),	0, 0 },
-					{ 0,				0,				1, 0 },
-					{ 0,				0,				0, 1 }} };
+	
+	/* { {	{ cos(radians),		sin(radians),	0, 0 },
+			{ -sin(radians),	cos(radians),	0, 0 },
+			{ 0,				0,				1, 0 },
+			{ 0,				0,				0, 1 }} }; */
 
+	Matrix4 ret;
+	ret[0][0] = cos(radians);
+	ret[0][1] = sin(radians);
+	ret[1][0] = -sin(radians);
+	ret[1][1] = cos(radians);
+	ret[2][2] = 1;
+	ret[3][3] = 1;
 	return ret;
 }
 
@@ -130,23 +158,32 @@ Matrix4 Matrix4::RotationDeg(const double& x, const double& y, const double& z)
 
 Matrix4 Matrix4::Scale(const Vector3<double>& vec)
 {
-	Matrix4 ret;
-	ret.matrix = { {{ vec.X, 0,	0, 0 },
-					{ 0, vec.Y,	0, 0 },
-					{ 0, 0, vec.Z, 0 },
-					{ 0, 0, 0,	   1 }} };
+	/* { {	{ vec.X, 0,	0, 0 },
+			{ 0, vec.Y,	0, 0 },
+			{ 0, 0, vec.Z, 0 },
+			{ 0, 0, 0,	   1 }} }; */
 
+	Matrix4 ret;
+	ret[0][0] = vec.X;
+	ret[1][1] = vec.Y;
+	ret[2][2] = vec.Z;
+	ret[3][3] = 1;
 	return ret;
 }
 
 Matrix4 Matrix4::Scale(const double& X, const double& Y, const double& Z)
 {
-	Matrix4 ret;
-	ret.matrix = { {{ X, 0,	0, 0 },
-					{ 0, Y,	0, 0 },
-					{ 0, 0, Z, 0 },
-					{ 0, 0, 0, 1 }} };
+	
+	/* { {	{ X, 0,	0, 0 },
+			{ 0, Y,	0, 0 },
+			{ 0, 0, Z, 0 },
+			{ 0, 0, 0, 1 }} }; */
 
+	Matrix4 ret;
+	ret[0][0] = X;
+	ret[1][1] = Y;
+	ret[2][2] = Z;
+	ret[3][3] = 1;
 	return ret;
 }
 
