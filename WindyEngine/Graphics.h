@@ -29,6 +29,7 @@ public:
 	void DrawLine(const int&, const int&, const int&, const int&, const COLORREF&);
 	void DrawTriangle(Vertex3, Vertex3, Vertex3);
 	void DrawTriangleScanline(const Vertex3&, const Vertex3&, const Vertex3&);
+	void DrawTriangleOutline(const Vertex3&, const Vertex3&, const Vertex3&, COLORREF col);
 	bool isCounterClockwise(const Vertex3&, const Vertex3&, const Vertex3&);
 
 private:

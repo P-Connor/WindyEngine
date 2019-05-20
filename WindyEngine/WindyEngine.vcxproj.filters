@@ -17,7 +17,7 @@
     <Filter Include="Generic Datatypes">
       <UniqueIdentifier>{018fc4ec-ebfe-48ca-ba0d-5571fbe7741c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Primitive Meshes">
+    <Filter Include="Mesh Types">
       <UniqueIdentifier>{4295a58b-9fc4-456c-865b-3454ecb84520}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -45,7 +45,7 @@
       <Filter>Component Classes</Filter>
     </ClCompile>
     <ClCompile Include="Cube.cpp">
-      <Filter>Primitive Meshes</Filter>
+      <Filter>Mesh Types</Filter>
     </ClCompile>
     <ClCompile Include="Matrix4.cpp">
       <Filter>Generic Datatypes</Filter>
@@ -66,7 +66,7 @@
       <Filter>Rendering Classes</Filter>
     </ClCompile>
     <ClCompile Include="Face.cpp">
-      <Filter>Primitive Meshes</Filter>
+      <Filter>Mesh Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -98,7 +98,7 @@
       <Filter>Generic Datatypes</Filter>
     </ClInclude>
     <ClInclude Include="Cube.h">
-      <Filter>Primitive Meshes</Filter>
+      <Filter>Mesh Types</Filter>
     </ClInclude>
     <ClInclude Include="Matrix4.h">
       <Filter>Generic Datatypes</Filter>
@@ -122,7 +122,7 @@
       <Filter>Rendering Classes</Filter>
     </ClInclude>
     <ClInclude Include="Face.h">
-      <Filter>Primitive Meshes</Filter>
+      <Filter>Mesh Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

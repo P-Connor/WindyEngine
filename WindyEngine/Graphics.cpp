@@ -610,6 +610,17 @@ void Graphics::DrawTriangleScanline(const Vertex3& vertex1, const Vertex3& verte
 	}
 }
 
+void Graphics::DrawTriangleOutline(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3, COLORREF col)
+{
+	DrawLine(v1.position.X, v1.position.Y, v2.position.X, v2.position.Y, col);
+	DrawLine(v2.position.X, v2.position.Y, v3.position.X, v3.position.Y, col);
+	DrawLine(v1.position.X, v1.position.Y, v3.position.X, v3.position.Y, col);
+
+	FillPixel(v1.position.X, v1.position.Y, RGB(255, 0, 255));
+	FillPixel(v2.position.X, v2.position.Y, RGB(255, 0, 255));
+	FillPixel(v3.position.X, v3.position.Y, RGB(255, 0, 255));
+}
+
 bool Graphics::isCounterClockwise(const Vertex3& v1, const Vertex3& v2, const Vertex3& v3)
 {
 	//compare slopes of vectors v1v2 and v2v3
