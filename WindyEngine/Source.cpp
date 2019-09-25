@@ -11,7 +11,6 @@ void Windy::Begin() {
 	anvil.mesh = Mesh("C:\\Users\\Colloquiem\\Desktop\\Anvil2.obj");
 	anvil.transform.position = Vector3<double>(0.0, 0.0, 20.0);
 	anvil.transform.rotation = Vector3<double>(0, 0, 0);
-	//anvil.transform.scale = Vector3<double>(.5, 1, 1);
 	AddGameObject(anvil);
 
 	/*GameObject target;
@@ -33,7 +32,18 @@ void Windy::Begin() {
 	AddGameObject(cube4);
 	AddGameObject(cube5);
 	*/
-	
+
+	/*
+	GameObject cube;
+	for (int x = -3; x < 3; x++) {
+		for (int y = -3; y < 3; y++) {
+			for (int z = -3; z < 3; z++) {
+				cube.transform.position = Vector3<double>(x * 2, y * 2, (z * 2) + 50 );
+				AddGameObject(cube);
+			}
+		}
+	}
+	*/
 }
 	
 //Called once per frame
@@ -47,6 +57,13 @@ void Windy::Update() {
 		gameObjects[1].transform.position = Vector3<double>((rand() % 5) - 2.5, (rand() % 20) - 5, (rand() % 10) + 10);
 	}*/
 
+	/*
+	for (int i = 1; i < gameObjects.size(); i++) {
+		gameObjects[i].transform.position.X *= 1.01;
+		gameObjects[i].transform.position.Y *= 1.01;
+	}
+	*/
+
 	for (int axis = 0; axis < 3; axis++) {
 		if (angle[axis] > 360) {
 			angle[axis] -= 360;
@@ -57,11 +74,11 @@ void Windy::Update() {
 	}
 	if (WInput.KeyHeld(KC_W) || WInput.KeyDown(KC_W)) {
 		angle[2] += angleInc * deltaTime * 10;
-		//gameObjects[0].transform.position.Y += angleInc * deltaTime;
+		gameObjects[0].transform.position.Y += angleInc * deltaTime;
 	}
 	if (WInput.KeyHeld(KC_S) || WInput.KeyDown(KC_S)) {
 		angle[2] -= angleInc * deltaTime * 10;
-		//gameObjects[0].transform.position.Y -= angleInc * deltaTime;
+		gameObjects[0].transform.position.Y -= angleInc * deltaTime;
 	}
 	if (WInput.KeyHeld(KC_D) || WInput.KeyDown(KC_D)) {
 		angle[1] += angleInc * deltaTime * 10;

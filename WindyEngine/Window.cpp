@@ -118,6 +118,8 @@ MainWindow::MainWindow(
 	}
 	resolution = Vector2<int>(w, h);
 	camera = Camera(resolution);
+	//camera.SetMode(ORTHOGRAPHIC);
+	//camera.SetFov(90);
 	graphics = new Graphics(hdc, resolution);
 }
 
@@ -135,16 +137,18 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 
 		//last = total.Value();
 		//WinDebug.Log(std::to_string(last) + "\t-allocated");
+		
+		Matrix4 rotMatrix = Matrix4::RotationDeg(gameObjects[obj].transform.rotation);
 
 		for (int i = 0; i < gameObjects[obj].mesh.vertCount; i++) {
 			modifiedVerts[i] = gameObjects[obj].mesh.vertices[i];
 			modifiedVerts[i].position *= gameObjects[obj].transform.scale;
-			modifiedVerts[i].position = Matrix4::RotationDeg(gameObjects[obj].transform.rotation) * modifiedVerts[i].position;
+			modifiedVerts[i].position = rotMatrix * modifiedVerts[i].position;
 			modifiedVerts[i].position.Translate(gameObjects[obj].transform.position);
 			camera.WorldToScreen(modifiedVerts[i]);
 		}
 		
-		//WinDebug.Log(std::to_string(total.Value()-last));
+		//WinDebug.Log(std::to_string(total.Value()-last) + "\t-modified");
 		//last = total.Value();
 
 		for (int i = 0; i < gameObjects[obj].mesh.triCount; i++) {
@@ -164,12 +168,18 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 		
 		//WinDebug.Log(tris);
 		delete[] modifiedVerts;
+		//WinDebug.Log(std::to_string(total.Value() - last) + "\t-deleted");
+		//last = total.Value();
 	}
 
 	BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);
+	
+	//WinDebug.Log(std::to_string(total.Value() - last) + "\t-flipped buffer");
+	//last = total.Value();
+	
 	graphics->ClearBuffer();
 
-	//WinDebug.Log(std::to_string(total.Value()-last) + "\t-finished");
+	//WinDebug.Log(std::to_string(total.Value()-last) + "\t-cleared old buffer");
 }
 
 LRESULT MainWindow::HandleMessage(UINT message, WPARAM wParam, LPARAM lParam)

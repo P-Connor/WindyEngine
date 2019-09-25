@@ -25,8 +25,8 @@ Graphics::Graphics(HDC& hdc, const Vector2<int>& _res)
 	pixelBufferInfo.bmiHeader.biClrImportant = 0;
 	pixelBuffer = CreateDIBSection(memoryHDC, &pixelBufferInfo, DIB_RGB_COLORS, (void**)&pixelBufferBytes, NULL, NULL);
 
-	zBufferBytes = new double [resolution.X * resolution.Y];
-	std::fill(zBufferBytes, zBufferBytes + (resolution.X * resolution.Y), INFINITY);
+	zBufferBytes = new float [resolution.X * resolution.Y];
+	memset(zBufferBytes, 0, sizeof(float) * (resolution.X * resolution.Y));
 
 	SelectObject(memoryHDC, pixelBuffer);
 }
@@ -42,11 +42,13 @@ const HDC& Graphics::GetMemoryHDC()
 	return memoryHDC;
 }
 
-void Graphics::ClearBuffer() {		
+//Clears the saved screen buffer
+void Graphics::ClearBuffer() {
 	memset(pixelBufferBytes, 0, pixelBufferInfo.bmiHeader.biSizeImage);
-	std::fill(zBufferBytes, zBufferBytes + (resolution.X * resolution.Y), INFINITY);
+	memset(zBufferBytes, 0, sizeof(float) * (resolution.X * resolution.Y));
 }
 
+//Fills a pixel on the screen with bounds checking
 void Graphics::FillPixel(const int& x, const int& y, const COLORREF& color)
 {
 	if (x < resolution.X && x >= 0 && y < resolution.Y && y >= 0) {
@@ -55,6 +57,16 @@ void Graphics::FillPixel(const int& x, const int& y, const COLORREF& color)
 		pixelBufferBytes[index + 1] = GetGValue(color);
 		pixelBufferBytes[index + 2] = GetRValue(color);
 	}
+}
+
+//Fills a pixel on the screen
+//NOTE: DOES NOT DO BOUNDS CHECKING, See FillPixelSafe
+void Graphics::FillPixelUnsafe(const int& x, const int& y, const COLORREF& color)
+{
+	int index = (y * (4 * resolution.X)) + (4 * x);
+	pixelBufferBytes[index + 0] = GetBValue(color);
+	pixelBufferBytes[index + 1] = GetGValue(color);
+	pixelBufferBytes[index + 2] = GetRValue(color);
 }
 
 COLORREF Graphics::GetPixel(const int& x, const int& y)
@@ -114,7 +126,7 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 				threshold += 2;
 			}
 
-			FillPixel(x, y, color);
+			FillPixelUnsafe(x, y, color);
 
 			offset += doubleSlope;
 		}
@@ -139,7 +151,7 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 				threshold += 2;
 			}
 
-			FillPixel(x, y, color);
+			FillPixelUnsafe(x, y, color);
 
 			offset += doubleSlope;
 		}
@@ -222,7 +234,7 @@ void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 
 				//WinDebug.Log(std::to_string((double)w0 / area) + ", " + std::to_string((double)w1 / area) + ", " + std::to_string((double)w2 / area));
 
-				if ((p.Y * resolution.X + p.X) >= 0 && (p.Y * resolution.X + p.X) < (resolution.X * resolution.Y) && zBufferBytes[p.Y * resolution.X + p.X] >= z && z > 0 && z < 1) {
+				if ((p.Y * resolution.X + p.X) >= 0 && (p.Y * resolution.X + p.X) < (resolution.X * resolution.Y) && (zBufferBytes[p.Y * resolution.X + p.X] >= z || zBufferBytes[p.Y * resolution.X + p.X] == 0) && z > 0 && z < 1) {
 					
 					zBufferBytes[p.Y * resolution.X + p.X] = z;
 					
@@ -230,7 +242,7 @@ void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 					byte g = GetGValue(v1.color) * p0 + GetGValue(v2.color) * p1 + GetGValue(v3.color) * p2;
 					byte b = GetBValue(v1.color) * p0 + GetBValue(v2.color) * p1 + GetBValue(v3.color) * p2;
 					
-					FillPixel(p.X, p.Y, RGB(r, g, b));
+					FillPixelUnsafe(p.X, p.Y, RGB(r, g, b));
 				}
 
 				//WinDebug.Log(std::to_string(pixels.Value()) + "\t fill");

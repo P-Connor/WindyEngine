@@ -24,6 +24,7 @@ public:
 	const HDC& GetMemoryHDC();
 	void ClearBuffer();
 	void FillPixel(const int&, const int&, const COLORREF&);
+	void FillPixelUnsafe(const int&, const int&, const COLORREF&);
 	COLORREF GetPixel(const int&, const int&);
 	void DrawLine(const Vector2<int>&, const Vector2<int>&, const COLORREF&);
 	void DrawLine(const int&, const int&, const int&, const int&, const COLORREF&);
@@ -37,6 +38,6 @@ private:
 	HBITMAP pixelBuffer;
 	BITMAPINFO pixelBufferInfo;
 	unsigned char *pixelBufferBytes = 0;
-	double *zBufferBytes = 0;
+	float *zBufferBytes = 0;
 	Vector2<int> resolution;
 };

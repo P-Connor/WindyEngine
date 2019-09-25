@@ -127,6 +127,7 @@ Matrix4 Matrix4::RotationZ(const double& radians)
 
 Matrix4 Matrix4::RotationRad(const Vector3<double>& vec)
 {
+
 	Matrix4 ret;
 	ret = (RotationX(vec.X) * RotationY(vec.Y)) * RotationZ(vec.Z);
 
