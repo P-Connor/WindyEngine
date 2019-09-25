@@ -8,7 +8,7 @@ void Windy::Begin() {
 	//GetMainWindow().camera.UpdProjection(ORTHOGRAPHIC);
 
 	GameObject anvil;
-	anvil.mesh = Mesh("C:\\Users\\Colloquiem\\Desktop\\Anvil2.obj");
+	anvil.mesh = Mesh("./Resources/Anvil2.obj");
 	anvil.transform.position = Vector3<double>(0.0, 0.0, 20.0);
 	anvil.transform.rotation = Vector3<double>(0, 0, 0);
 	AddGameObject(anvil);

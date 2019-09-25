@@ -126,8 +126,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Windy.log">
+    <Text Include="Windy.log" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resources\Anvil2.obj">
       <Filter>Resource Files</Filter>
-    </Text>
+    </Object>
   </ItemGroup>
 </Project>
