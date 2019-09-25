@@ -18,10 +18,8 @@ private:
 	Debug();
 	~Debug();
 
-	const std::string logFileName = "WinLog.txt";
+	const std::string logFileName = "Windy.log";
 	std::ofstream ofstream;
-
-	std::map<std::string, Timer> timers;
 };
 
 template<class T>

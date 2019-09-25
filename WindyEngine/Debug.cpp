@@ -14,7 +14,7 @@ Debug::~Debug()
 {
 	long long sum = 0, count = 0, num;
 	std::ifstream ifstream;
-	ifstream.open("WinLog.txt");
+	ifstream.open(logFileName);
 	while (ifstream >> num) {
 		sum += num;
 		count++;

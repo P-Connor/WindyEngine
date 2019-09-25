@@ -126,7 +126,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="WinLog.txt">
+    <Text Include="Windy.log">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
