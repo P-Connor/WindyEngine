@@ -15,8 +15,11 @@ Camera::Camera(const Vector2<int>& _resolution)
 
 	resolution = _resolution;
 
+	transform.position = Vector3<double>(5, 0, 0);
+	transform.rotation = Vector3<double>(0, 0, 0);
+	transform.scale = Vector3<double>(1, 1, 1);
+
 	worldToCamera = Matrix4::Identity();
-	cameraToWorld = worldToCamera;
 }
 
 //Returns true if the point is potentially visible
@@ -36,41 +39,6 @@ void Camera::WorldToScreen(Vertex3& vert)
 	vert.position.Y = resolution.Y - (resolution.Y * vert.position.Y); //Flip on y axis for top to bottom Y coords
 }
 
-void Camera::UpdProjection()
-{
-	switch (mode) {
-	
-	case PERSPECTIVE:
-		/* { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,					0						},
-				{0,												1 / WindyMath::Tan(fov / 2),	0,					0						},
-				{0,												0,								1 / (farP - nearP),	-nearP / (farP - nearP)	},
-				{0,												0,								1,					0						}	} }; */
-		
-		projectionMatrix = Matrix4();
-		projectionMatrix[0][0] = 1 / (aspectRatio * WindyMath::Tan(fov / 2));
-		projectionMatrix[1][1] = 1 / WindyMath::Tan(fov / 2);
-		projectionMatrix[2][2] = 1 / (farP - nearP);
-		projectionMatrix[2][3] = -nearP / (farP - nearP);
-		projectionMatrix[3][2] = 1;
-		
-		break;
-	
-	case ORTHOGRAPHIC:
-		/* { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0	},
-				{0,												1 / WindyMath::Tan(fov / 2),	0,	0	},
-				{0,												0,								1,	0	},
-				{0,												0,								0,	1	}	} }; */
-		
-		projectionMatrix = Matrix4();
-		projectionMatrix[0][0] = 1 / (aspectRatio * WindyMath::Tan(fov / 2));
-		projectionMatrix[1][1] = 1 / WindyMath::Tan(fov / 2);
-		projectionMatrix[2][2] = 1;
-		projectionMatrix[3][3] = 1;
-		
-		break;	
-	}
-
-}
 
 CameraMode Camera::GetMode() const { return mode; }
 
@@ -102,4 +70,76 @@ void Camera::SetFov(const double& deg)
 {
 	fov = (deg * (2 * 3.14159265359)) / 360;
 	UpdProjection();
+}
+
+void Camera::SetPosition(const Vector3<double>& p)
+{
+	transform.position = p;
+	UpdViewMatrix();
+}
+
+void Camera::SetRotation(const Vector3<double>& r)
+{
+	transform.rotation = r;
+	UpdViewMatrix();
+}
+
+void Camera::SetScale(const Vector3<double>& s)
+{
+	transform.scale = s;
+	UpdViewMatrix();
+}
+
+Matrix4 Camera::GetWorldToCamera() const
+{
+	return worldToCamera;
+}
+
+Matrix4 Camera::GetProjection() const
+{
+	return projectionMatrix;
+}
+
+void Camera::UpdViewMatrix()
+{
+	worldToCamera = Matrix4::Identity();
+	worldToCamera = Matrix4::RotationDeg(transform.rotation) * worldToCamera;
+	worldToCamera = Matrix4::Scale(transform.scale) * worldToCamera;
+	worldToCamera = Matrix4::Translation(transform.position) * worldToCamera;
+}
+
+void Camera::UpdProjection()
+{
+	switch (mode) {
+
+	case PERSPECTIVE:
+		/* { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,					0						},
+				{0,												1 / WindyMath::Tan(fov / 2),	0,					0						},
+				{0,												0,								1 / (farP - nearP),	-nearP / (farP - nearP)	},
+				{0,												0,								1,					0						}	} }; */
+
+		projectionMatrix = Matrix4();
+		projectionMatrix[0][0] = 1 / (aspectRatio * WindyMath::Tan(fov / 2));
+		projectionMatrix[1][1] = 1 / WindyMath::Tan(fov / 2);
+		projectionMatrix[2][2] = 1 / (farP - nearP);
+		projectionMatrix[2][3] = -nearP / (farP - nearP);
+		projectionMatrix[3][2] = 1;
+
+		break;
+
+	case ORTHOGRAPHIC:
+		/* { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,	0	},
+				{0,												1 / WindyMath::Tan(fov / 2),	0,	0	},
+				{0,												0,								1,	0	},
+				{0,												0,								0,	1	}	} }; */
+
+		projectionMatrix = Matrix4();
+		projectionMatrix[0][0] = 1 / (aspectRatio * WindyMath::Tan(fov / 2));
+		projectionMatrix[1][1] = 1 / WindyMath::Tan(fov / 2);
+		projectionMatrix[2][2] = 1;
+		projectionMatrix[3][3] = 1;
+
+		break;
+	}
+
 }
