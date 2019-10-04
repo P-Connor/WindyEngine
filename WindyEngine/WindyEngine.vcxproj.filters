@@ -129,8 +129,8 @@
     <Text Include="Windy.log" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Resources\Anvil2.obj">
+    <MeshContentTask Include="Resources\Anvil2.obj">
       <Filter>Resource Files</Filter>
-    </Object>
+    </MeshContentTask>
   </ItemGroup>
 </Project>
