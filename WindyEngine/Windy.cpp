@@ -46,7 +46,7 @@ Windy::Windy(LPCWSTR displayT, int w, int h) : mainWin( displayT,
 //Not to be confused with Update(), Loop() handles all of the "low level" events of the engine per frame
 void Windy::Loop() {
 	static Timer framerateTimer, secondsTimer;
-	static long frames = 0;
+	static unsigned frames = 0;
 	
 	HDC hdc = GetDC(mainWin.GetWindowH());
 	mainWin.Draw(hdc, gameObjects);

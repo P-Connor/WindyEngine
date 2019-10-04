@@ -26,6 +26,7 @@ public:
 
 	static LRESULT CALLBACK WindowProcedure(HWND windowH, UINT message, WPARAM wParam, LPARAM lParam);
 	HWND GetWindowH() const { return windowH; }
+	Camera& GetCamera() { return camera; }
 	virtual void Draw(HDC, const std::vector<GameObject>&) = 0;
 
 protected:
