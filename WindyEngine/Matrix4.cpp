@@ -2,8 +2,9 @@
 
 Matrix4 Matrix4::operator*(const Matrix4& matrix2) const
 {
-	Matrix4 ret;
+	static Matrix4 ret;
 
+	/*
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			ret[j][i] = matrix[j][0] * matrix2[0][i]
@@ -12,6 +13,26 @@ Matrix4 Matrix4::operator*(const Matrix4& matrix2) const
 					  + matrix[j][3] * matrix2[3][i];
 		}
 	}
+	*/
+	ret[0][0] = matrix[0][0] * matrix2.matrix[0][0] + matrix[1][0] * matrix2.matrix[0][1] + matrix[2][0] * matrix2.matrix[0][2] + matrix[3][0] * matrix2.matrix[0][3];
+	ret[0][1] = matrix[0][1] * matrix2.matrix[0][0] + matrix[1][1] * matrix2.matrix[0][1] + matrix[2][1] * matrix2.matrix[0][2] + matrix[3][1] * matrix2.matrix[0][3];
+	ret[0][2] = matrix[0][2] * matrix2.matrix[0][0] + matrix[1][2] * matrix2.matrix[0][1] + matrix[2][2] * matrix2.matrix[0][2] + matrix[3][2] * matrix2.matrix[0][3];
+	ret[0][3] = matrix[0][3] * matrix2.matrix[0][0] + matrix[1][3] * matrix2.matrix[0][1] + matrix[2][3] * matrix2.matrix[0][2] + matrix[3][3] * matrix2.matrix[0][3];
+							 
+	ret[1][0] = matrix[0][0] * matrix2.matrix[1][0] + matrix[1][0] * matrix2.matrix[1][1] + matrix[2][0] * matrix2.matrix[1][2] + matrix[3][0] * matrix2.matrix[1][3];
+	ret[1][1] = matrix[0][1] * matrix2.matrix[1][0] + matrix[1][1] * matrix2.matrix[1][1] + matrix[2][1] * matrix2.matrix[1][2] + matrix[3][1] * matrix2.matrix[1][3];
+	ret[1][2] = matrix[0][2] * matrix2.matrix[1][0] + matrix[1][2] * matrix2.matrix[1][1] + matrix[2][2] * matrix2.matrix[1][2] + matrix[3][2] * matrix2.matrix[1][3];
+	ret[1][3] = matrix[0][3] * matrix2.matrix[1][0] + matrix[1][3] * matrix2.matrix[1][1] + matrix[2][3] * matrix2.matrix[1][2] + matrix[3][3] * matrix2.matrix[1][3];
+							
+	ret[2][0] = matrix[0][0] * matrix2.matrix[2][0] + matrix[1][0] * matrix2.matrix[2][1] + matrix[2][0] * matrix2.matrix[2][2] + matrix[3][0] * matrix2.matrix[2][3];
+	ret[2][1] = matrix[0][1] * matrix2.matrix[2][0] + matrix[1][1] * matrix2.matrix[2][1] + matrix[2][1] * matrix2.matrix[2][2] + matrix[3][1] * matrix2.matrix[2][3];
+	ret[2][2] = matrix[0][2] * matrix2.matrix[2][0] + matrix[1][2] * matrix2.matrix[2][1] + matrix[2][2] * matrix2.matrix[2][2] + matrix[3][2] * matrix2.matrix[2][3];
+	ret[2][3] = matrix[0][3] * matrix2.matrix[2][0] + matrix[1][3] * matrix2.matrix[2][1] + matrix[2][3] * matrix2.matrix[2][2] + matrix[3][3] * matrix2.matrix[2][3];
+
+	ret[3][0] = matrix[0][0] * matrix2.matrix[3][0] + matrix[1][0] * matrix2.matrix[3][1] + matrix[2][0] * matrix2.matrix[3][2] + matrix[3][0] * matrix2.matrix[3][3];
+	ret[3][1] = matrix[0][1] * matrix2.matrix[3][0] + matrix[1][1] * matrix2.matrix[3][1] + matrix[2][1] * matrix2.matrix[3][2] + matrix[3][1] * matrix2.matrix[3][3];
+	ret[3][2] = matrix[0][2] * matrix2.matrix[3][0] + matrix[1][2] * matrix2.matrix[3][1] + matrix[2][2] * matrix2.matrix[3][2] + matrix[3][2] * matrix2.matrix[3][3];
+	ret[3][3] = matrix[0][3] * matrix2.matrix[3][0] + matrix[1][3] * matrix2.matrix[3][1] + matrix[2][3] * matrix2.matrix[3][2] + matrix[3][3] * matrix2.matrix[3][3];
 
 	return ret;
 }
@@ -45,31 +66,29 @@ Matrix4 Matrix4::Identity()
 Matrix4 Matrix4::Translation(const Vector3<double>& vec)
 {
 
-	/* {	{ 0, 0, 0, vec.X },
-			{ 0, 0, 0, vec.Y },
-			{ 0, 0, 0, vec.Z },
+	/* {	{ 1, 0, 0, vec.X },
+			{ 0, 1, 0, vec.Y },
+			{ 0, 0, 1, vec.Z },
 			{ 0, 0, 0, 1	 } }; */
 
-	Matrix4 ret;
+	Matrix4 ret = Identity();
 	ret[0][3] = vec.X;
 	ret[1][3] = vec.Y;
 	ret[2][3] = vec.Z;
-	ret[3][3] = 1;
 	return ret;
 }
 
 Matrix4 Matrix4::Translation(const double& x, const double& y, const double& z)
 {
-	/* {	{ 0, 0, 0, x },
-			{ 0, 0, 0, y },
-			{ 0, 0, 0, z },
-			{ 0, 0, 0, 1	 } }; */
+	/* {	{ 1, 0, 0, x },
+			{ 0, 1, 0, y },
+			{ 0, 0, 1, z },
+			{ 0, 0, 0, 1 } }; */
 
-	Matrix4 ret;
+	Matrix4 ret = Identity();
 	ret[0][3] = x;
 	ret[1][3] = y;
 	ret[2][3] = z;
-	ret[3][3] = 1;
 	return ret;
 }
 
@@ -186,6 +205,105 @@ Matrix4 Matrix4::Scale(const double& X, const double& Y, const double& Z)
 	ret[2][2] = Z;
 	ret[3][3] = 1;
 	return ret;
+}
+
+//Returns the matrix's determinant
+double Matrix4::Determinant() {
+	
+	//Overview: Compute determinant by maniupulating matrix into upper triangular form
+
+	double ret = 1;	//use ret's sign to keep track of swaps
+
+	//Transform first column's values to 0 under first row
+	for (int j = 1; j <= 3; j++) {
+		if (matrix[j][0] != 0) {	//make sure it's not already 0
+			double x = matrix[j][0] / matrix[0][0];
+			for (int i = 0; i <= 3; i++) {
+				matrix[j][i] -= x * matrix[0][i];
+			}
+		}
+	}
+
+	//Check if number in (row 2, column 2) is 0
+	if (matrix[1][1] == 0) {
+		//If so, try to swap it with a lower row that doesn't have a 0 in column 2
+		int j;
+		for (j = 2; j <= 3; j++) {		//search through 2 lower rows to find nonzero value
+			if (matrix[j][1] != 0) {
+				break;					//j will be at correct row when break hits
+			}
+		}
+
+		if (j < 4) {	//if a potential swap was found, then swap
+			
+			ret *= -1;  //swap sign of result
+			double temp[4];	
+			for (int i = 0; i <= 3; i++) {
+				temp[i] = matrix[1][i];			//store row 2 into temp row
+			}
+			for (int i = 0; i <= 3; i++) {
+				matrix[1][i] = matrix[j][i];	//swap row j into row 2
+			}
+			for (int i = 0; i <= 3; i++) {
+				matrix[j][i] = temp[i];			//restore row 2 into row j
+			}
+
+		}
+		else {			//else the determinant is 0
+			return 0;
+		}
+	}
+
+	//Transform 2nd column's values to 0 under second row
+	for (int j = 2; j <= 3; j++) {
+		if (matrix[j][1] != 0) {	//make sure it's not already 0
+			double x = matrix[j][1] / matrix[1][1];
+			for (int i = 1; i <= 3; i++) {
+				matrix[j][i] -= x * matrix[1][i];
+			}
+		}
+	}
+
+	//Check if number in (row 3, column 3) is 0
+	if (matrix[2][2] == 0) {
+		//If so, try to swap it with the bottom row
+		if (matrix[3][2] != 0) {
+			
+			ret *= -1;  //swap sign of result
+			double temp[4];
+			for (int i = 0; i <= 3; i++) {
+				temp[i] = matrix[2][i];			//store row 3 into temp row
+			}
+			for (int i = 0; i <= 3; i++) {
+				matrix[2][i] = matrix[3][i];	//swap row 4 into row 3
+			}
+			for (int i = 0; i <= 3; i++) {
+				matrix[3][i] = temp[i];			//restore row 3 into row 4
+			}
+
+		}
+		else {	//if the lower row is also 0 in column 3, determinant is 0
+			return 0;
+		}
+	}
+
+	//Transform 3rd column's values to 0 under third row
+	if (matrix[3][2] != 0) {	//make sure it's not already 0
+		double x = matrix[3][2] / matrix[2][2];
+		for (int i = 2; i <= 3; i++) {
+			matrix[3][i] -= x * matrix[2][i];
+		}
+	}
+
+	//finally, compute determinant by finding product of diagonal
+	return ret * matrix[0][0] * matrix[1][1] * matrix[2][2] * matrix[3][3];
+}
+
+//Will return matrix's inverse once I get around to writing it
+//NOTE: FUNCTION NOT COMPLETE, RETURNS THIS OBJECT
+Matrix4 Matrix4::Inverse() {
+	//TO-DO: Compute inverse
+	return *this;
 }
 
 Vector3<double> Matrix4::MultiplyHomogeneous(const Vector3<double>& vec) const

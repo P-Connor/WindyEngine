@@ -26,6 +26,9 @@ public:
 	static Matrix4 Scale(const Vector3<double>&);
 	static Matrix4 Scale(const double&, const double&, const double&);
 
+	double Determinant();
+	Matrix4 Inverse();
+	
 	Vector3<double> MultiplyHomogeneous(const Vector3<double>&) const;
 
 //protected:
