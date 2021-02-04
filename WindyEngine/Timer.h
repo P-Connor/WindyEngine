@@ -7,7 +7,7 @@ public:
 	Timer();
 	
 	void Reset();
-	long long Value();
+	const long long& Value();
 
 private:
 	std::chrono::steady_clock::time_point timeStart;

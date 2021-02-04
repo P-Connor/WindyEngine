@@ -10,7 +10,7 @@ void Timer::Reset()
 	timeStart = std::chrono::steady_clock::now();
 }
 
-long long Timer::Value()
+const long long& Timer::Value()
 {
 	return (std::chrono::steady_clock::now() - timeStart).count();
 }
