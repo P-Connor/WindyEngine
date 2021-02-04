@@ -3,6 +3,9 @@
 
 namespace WindyMath {
 
+	const double RAD_TO_DEG = 0.0174533;
+	const double PI = 3.14159265359;
+
 	template <class T>
 	double Sqrt(const T& n) { return sqrt(n); }
 	template <class T>

@@ -1,4 +1,5 @@
 #pragma once
+#include "WindyMath.h"
 
 //TEMPLATE HEADER
 
