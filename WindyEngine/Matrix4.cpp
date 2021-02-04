@@ -95,33 +95,33 @@ Matrix4 Matrix4::Translation(const double& x, const double& y, const double& z)
 Matrix4 Matrix4::RotationX(const double& radians)
 {
 	/* { {	{ 1,	0,				0,				0 },
-			{ 0,	cos(radians),	sin(radians),	0 },
-			{ 0,	-sin(radians),	cos(radians),	0 },
+			{ 0,	cos(radians),	-sin(radians),	0 },
+			{ 0,	sin(radians),	cos(radians),	0 },
 			{ 0,	0,				0,				1 }} }; */
 	
 	Matrix4 ret;
 	ret[0][0] = 1;
 	ret[1][1] = cos(radians);
-	ret[1][2] = sin(radians);
-	ret[2][1] = -sin(radians);
-	ret[2][2] = cos(radians);
+	ret[1][2] = -sin(radians);
+	ret[2][1] = -ret[1][2];
+	ret[2][2] = ret[1][1];
 	ret[3][3] = 1;
 	return ret;
 };
 
 Matrix4 Matrix4::RotationY(const double& radians)
 {
-	/* { {	{ cos(radians),	0,	-sin(radians),	0 },
+	/* { {	{ cos(radians),	0,	sin(radians),	0 },
 			{ 0,			1,	0,				0 },
-			{ sin(radians), 0,	cos(radians),	0 },
+			{ -sin(radians), 0,	cos(radians),	0 },
 			{ 0,			0,	0,				1 }} }; */
 	
 	Matrix4 ret;
 	ret[0][0] = cos(radians);
-	ret[0][2] = -sin(radians);
+	ret[0][2] = sin(radians);
 	ret[1][1] = 1;
-	ret[2][0] = sin(radians);
-	ret[2][2] = cos(radians);
+	ret[2][0] = -ret[0][2];
+	ret[2][2] = ret[0][0];
 	ret[3][3] = 1;
 	return ret;
 }
@@ -129,16 +129,16 @@ Matrix4 Matrix4::RotationY(const double& radians)
 Matrix4 Matrix4::RotationZ(const double& radians)
 {
 	
-	/* { {	{ cos(radians),		sin(radians),	0, 0 },
-			{ -sin(radians),	cos(radians),	0, 0 },
+	/* { {	{ cos(radians),		-sin(radians),	0, 0 },
+			{ sin(radians),		cos(radians),	0, 0 },
 			{ 0,				0,				1, 0 },
 			{ 0,				0,				0, 1 }} }; */
 
 	Matrix4 ret;
 	ret[0][0] = cos(radians);
-	ret[0][1] = sin(radians);
-	ret[1][0] = -sin(radians);
-	ret[1][1] = cos(radians);
+	ret[0][1] = -sin(radians);
+	ret[1][0] = ret[0][1];
+	ret[1][1] = ret[0][0];
 	ret[2][2] = 1;
 	ret[3][3] = 1;
 	return ret;
@@ -146,34 +146,49 @@ Matrix4 Matrix4::RotationZ(const double& radians)
 
 Matrix4 Matrix4::RotationRad(const Vector3<double>& vec)
 {
-
-	Matrix4 ret;
-	ret = (RotationX(vec.X) * RotationY(vec.Y)) * RotationZ(vec.Z);
-
-	return ret;
+	//Matrix4 ret;
+	//ret = (RotationX(vec.X) * RotationY(vec.Y)) * RotationZ(vec.Z);
+	return RotationRad(vec.X, vec.Y, vec.Z);
 }
 
 Matrix4 Matrix4::RotationRad(const double& x, const double& y, const double& z)
 {
+	return (RotationY(y) * RotationX(x)) * RotationZ(z);
+
+	/*
 	Matrix4 ret;
-	ret = (RotationX(x) * RotationY(y)) * RotationZ(z);
+	//ret = (RotationX(x) * RotationY(y)) * RotationZ(z);
+	
+	double a = sin(x);
+	double b = cos(x);
+	double c = sin(y);
+	double d = cos(y);
+	double e = sin(z);
+	double f = cos(z);
+
+	ret[0][0] = f * d;
+	ret[0][1] = e * d;
+	ret[0][2] = -c;
+	ret[1][0] = (f * a * c) - (e * b);
+	ret[1][1] = (e * a * c) + (f * b);
+	ret[1][2] = a * d;
+	ret[2][0] = (f * b * c) + (e * a);
+	ret[2][1] = (e * b * c) - (f * a);
+	ret[2][2] = b * d;
+	ret[3][3] = 1;
+
 	return ret;
+	*/
 }
 
 Matrix4 Matrix4::RotationDeg(const Vector3<double>& vec)
 {
-	Matrix4 ret;
-	ret = (RotationX(vec.X * 0.0174533) * RotationY(vec.Y * 0.0174533)) * RotationZ(vec.Z * 0.0174533);
-
-	return ret;
+	return RotationRad(vec * WindyMath::RAD_TO_DEG);
 }
 
 Matrix4 Matrix4::RotationDeg(const double& x, const double& y, const double& z)
 {
-	Matrix4 ret;
-	ret = (RotationX(x * 0.0174533) * RotationY(y * 0.0174533)) * RotationZ(z * 0.0174533);
-
-	return ret;
+	return RotationRad(x * WindyMath::RAD_TO_DEG, y * WindyMath::RAD_TO_DEG, z * WindyMath::RAD_TO_DEG);
 }
 
 Matrix4 Matrix4::Scale(const Vector3<double>& vec)
@@ -308,7 +323,7 @@ Matrix4 Matrix4::Inverse() {
 
 Vector3<double> Matrix4::MultiplyHomogeneous(const Vector3<double>& vec) const
 {
-	Vector3<double> ret;
+	Vector3<double> ret = *this * vec;
 	ret.X = vec.X * matrix[0][0] + vec.Y * matrix[0][1] + vec.Z * matrix[0][2] + matrix[0][3];
 	ret.Y = vec.X * matrix[1][0] + vec.Y * matrix[1][1] + vec.Z * matrix[1][2] + matrix[1][3];
 	ret.Z = vec.X * matrix[2][0] + vec.Y * matrix[2][1] + vec.Z * matrix[2][2] + matrix[2][3];
