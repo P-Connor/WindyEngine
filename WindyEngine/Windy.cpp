@@ -59,7 +59,10 @@ void Windy::Loop() {
 	deltaTime = framerateTimer.Value() / 100000000.0;
 	if (secondsTimer.Value() > 1000000000) {
 		frameRate = frames;
+
+		// TODO - Remove log
 		WinDebug.Log(frameRate);
+
 		frames = 0;
 		secondsTimer.Reset();
 	}

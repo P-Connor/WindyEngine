@@ -60,11 +60,6 @@ int Window<WINDOW_TYPE>::Open (
 	return 0;
 }
 
-//TEMP------------------------------------------
-//const UINT_PTR IDT_TIMER1 = 1;
-//int x = 100, incX = 10;
-//int y = 50, incY = 10;
-
 template<class WINDOW_TYPE>
 LRESULT CALLBACK Window<WINDOW_TYPE>::WindowProcedure(HWND windowH, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -129,13 +124,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {	
-	//Timer total;
-	//unsigned last;
+	Timer total;
+	unsigned last;
 
 	for (int obj = 0; obj < gameObjects.size(); obj++) {
 		Vertex3 *modifiedVerts = new Vertex3[gameObjects[obj].mesh.vertCount];
 
-		//last = total.Value();
+		last = total.Value();
 		//WinDebug.Log(std::to_string(last) + "\t-allocated");
 		
 		Matrix4 rotMatrix = Matrix4::RotationDeg(gameObjects[obj].transform.rotation);
@@ -149,27 +144,19 @@ void MainWindow::Draw(HDC hdc, const std::vector<GameObject>& gameObjects) {
 		}
 		
 		//WinDebug.Log(std::to_string(total.Value()-last) + "\t-modified");
-		//last = total.Value();
+		last = total.Value();
 
 		for (int i = 0; i < gameObjects[obj].mesh.triCount; i++) {
 			graphics->DrawTriangle(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X], 
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
 									modifiedVerts[gameObjects[obj].mesh.triangles[i].Z]);
-
-			/*graphics->DrawTriangleOutline(	modifiedVerts[gameObjects[obj].mesh.triangles[i].X],
-											modifiedVerts[gameObjects[obj].mesh.triangles[i].Y],
-											modifiedVerts[gameObjects[obj].mesh.triangles[i].Z], RGB(i*20,255,i*13));*/
-			//BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);
-			//graphics->ClearBuffer();
 		}
 		
 		//WinDebug.Log(std::to_string(total.Value()-last) + "\t-drew triangles");
-		//last = total.Value();
+		last = total.Value();
 		
-		//WinDebug.Log(tris);
 		delete[] modifiedVerts;
 		//WinDebug.Log(std::to_string(total.Value() - last) + "\t-deleted");
-		//last = total.Value();
 	}
 
 	BitBlt(hdc, 0, 0, resolution.X, resolution.Y, graphics->GetMemoryHDC(), 0, 0, SRCCOPY);
