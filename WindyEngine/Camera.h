@@ -21,18 +21,19 @@ public:
 	double GetFov() const;
 	void SetFov(const double&);
 
-	void SetPosition(const Vector3<double>&);
-	void SetRotation(const Vector3<double>&);
-	void SetScale(const Vector3<double>&);
+	Transform& GetTransform();
 
 	Matrix4 GetWorldToCamera() const;
 	Matrix4 GetProjection() const;
 	
+	//TODO - Fix default constructor
 	Camera() {};
 	Camera(const Vector2<int>&);
 
-private:
+	// Use after manually updating tranform data
 	void UpdViewMatrix();
+
+private:
 	void UpdProjection();
 
 	Matrix4 worldToCamera, projectionMatrix;

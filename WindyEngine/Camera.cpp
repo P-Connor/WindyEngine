@@ -7,7 +7,7 @@ Camera::Camera(const Vector2<int>& _resolution)
 	farP = 1000;
 
 	aspectRatio = 16.0 / 9;
-	fov = (75 * (2 * 3.14159265359)) / 360;
+	fov = (75 * (2 * WindyMath::PI)) / 360;
 
 	mode = PERSPECTIVE;
 
@@ -22,10 +22,12 @@ Camera::Camera(const Vector2<int>& _resolution)
 	worldToCamera = Matrix4::Identity();
 }
 
-//Returns true if the point is potentially visible
+//Returns true if the point is potentially visible?
 void Camera::WorldToScreen(Vertex3& vert)
 {	
-	vert.position = worldToCamera * vert.position;	//Convert to camera coordinate system
+	//vert.position = worldToCamera * vert.position;	//Convert to camera coordinate system
+	vert.position -= transform.position;
+	vert.position = Matrix4::RotationDeg(transform.rotation) * vert.position;
 
 	vert.position = projectionMatrix.MultiplyHomogeneous(vert.position);//Project to canvas
 	
@@ -68,26 +70,12 @@ double Camera::GetFov() const { return fov; }
 
 void Camera::SetFov(const double& deg)
 {
-	fov = (deg * (2 * 3.14159265359)) / 360;
+	fov = (deg * (2 * WindyMath::PI)) / 360;
 	UpdProjection();
 }
 
-void Camera::SetPosition(const Vector3<double>& p)
-{
-	transform.position = p;
-	UpdViewMatrix();
-}
-
-void Camera::SetRotation(const Vector3<double>& r)
-{
-	transform.rotation = r;
-	UpdViewMatrix();
-}
-
-void Camera::SetScale(const Vector3<double>& s)
-{
-	transform.scale = s;
-	UpdViewMatrix();
+Transform& Camera::GetTransform() {
+	return transform;
 }
 
 Matrix4 Camera::GetWorldToCamera() const
@@ -102,9 +90,8 @@ Matrix4 Camera::GetProjection() const
 
 void Camera::UpdViewMatrix()
 {
-	worldToCamera = Matrix4::Identity();
-	worldToCamera = Matrix4::RotationDeg(transform.rotation) * worldToCamera;
-	worldToCamera = Matrix4::Scale(transform.scale) * worldToCamera;
+	worldToCamera = Matrix4::RotationDeg(transform.rotation);
+	//worldToCamera = Matrix4::Scale(transform.scale) * worldToCamera;
 	worldToCamera = Matrix4::Translation(transform.position) * worldToCamera;
 }
 
@@ -115,15 +102,15 @@ void Camera::UpdProjection()
 	case PERSPECTIVE:
 		/* { {	{1 / (aspectRatio * WindyMath::Tan(fov / 2)),	0,								0,					0						},
 				{0,												1 / WindyMath::Tan(fov / 2),	0,					0						},
-				{0,												0,								1 / (farP - nearP),	-nearP / (farP - nearP)	},
-				{0,												0,								1,					0						}	} }; */
+				{0,												0,								-1 / (farP - nearP),	-nearP / (farP - nearP)	},
+				{0,												0,								-1,					0						}	} }; */
 
 		projectionMatrix = Matrix4();
 		projectionMatrix[0][0] = 1 / (aspectRatio * WindyMath::Tan(fov / 2));
 		projectionMatrix[1][1] = 1 / WindyMath::Tan(fov / 2);
-		projectionMatrix[2][2] = 1 / (farP - nearP);
+		projectionMatrix[2][2] = -1 / (farP - nearP);
 		projectionMatrix[2][3] = -nearP / (farP - nearP);
-		projectionMatrix[3][2] = 1;
+		projectionMatrix[3][2] = -1;
 
 		break;
 
