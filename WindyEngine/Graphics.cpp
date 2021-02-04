@@ -45,7 +45,7 @@ const HDC& Graphics::GetMemoryHDC()
 //Clears the saved screen buffer
 void Graphics::ClearBuffer() {
 	memset(pixelBufferBytes, 0, pixelBufferInfo.bmiHeader.biSizeImage);
-	memset(zBufferBytes, 0, sizeof(float) * (resolution.X * resolution.Y));
+	memset(zBufferBytes, 0, sizeof(float) * ((size_t)resolution.X * resolution.Y));
 }
 
 //Fills a pixel on the screen with bounds checking
@@ -60,7 +60,7 @@ void Graphics::FillPixel(const int& x, const int& y, const COLORREF& color)
 }
 
 //Fills a pixel on the screen
-//NOTE: DOES NOT DO BOUNDS CHECKING, See FillPixelSafe
+//NOTE: DOES NOT DO BOUNDS CHECKING, See FillPixel
 void Graphics::FillPixelUnsafe(const int& x, const int& y, const COLORREF& color)
 {
 	int index = (y * (4 * resolution.X)) + (4 * x);
@@ -72,13 +72,8 @@ void Graphics::FillPixelUnsafe(const int& x, const int& y, const COLORREF& color
 COLORREF Graphics::GetPixel(const int& x, const int& y)
 {
 	if (x < resolution.X && x >= 0 && y < resolution.Y && y >= 0) {
-		int index = (y * (4 * resolution.X)) + (4 * x);
-		
-		int bVal = (int)pixelBufferBytes[index + 0];
-		int gVal = (int)pixelBufferBytes[index + 1];
-		int rVal = (int)pixelBufferBytes[index + 2];
-		
-		return RGB(rVal, gVal, bVal);
+		const int index = (y * (4 * resolution.X)) + (4 * x);
+		return RGB((int)pixelBufferBytes[index + 0], (int)pixelBufferBytes[index + 1], (int)pixelBufferBytes[index + 2]);
 	}
 	else {
 		return NULL;
@@ -126,7 +121,7 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 				threshold += 2;
 			}
 
-			FillPixelUnsafe(x, y, color);
+			FillPixel(x, y, color);
 
 			offset += doubleSlope;
 		}
@@ -151,7 +146,7 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 				threshold += 2;
 			}
 
-			FillPixelUnsafe(x, y, color);
+			FillPixel(x, y, color);
 
 			offset += doubleSlope;
 		}
@@ -162,8 +157,8 @@ void Graphics::DrawLine(const int& X1, const int& Y1, const int& X2, const int& 
 
 void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 {
-	static Timer t1, rows, pixels;
-	t1.Reset();
+	//static Timer t1, rows, pixels;
+	//t1.Reset();
 
 	if (!isCounterClockwise(v1, v2, v3)) {
 		return;
@@ -182,17 +177,16 @@ void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 		std::swap(v2, v3);
 	}
 
-	float A12 = v1.position.Y - v2.position.Y, B12 = v2.position.X - v1.position.X;
-	float A23 = v2.position.Y - v3.position.Y, B23 = v3.position.X - v2.position.X;
-	float A31 = v3.position.Y - v1.position.Y, B31 = v1.position.X - v3.position.X;
+	const float A12 = v1.position.Y - v2.position.Y, const B12 = v1.position.X - v2.position.X;
+	const float A23 = v2.position.Y - v3.position.Y, const B23 = v2.position.X - v3.position.X;
+	const float A31 = v3.position.Y - v1.position.Y, const B31 = v3.position.X - v1.position.X;
 
 	Vector2<int> p((int)v1.position.X, (int)v1.position.Y);
-	float w0 = A23 * p.X + B23 * p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
-	float w1 = A31 * p.X + B31 * p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
-	float w2 = A12 * p.X + B12 * p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
+	float w0 = A23 * p.X - B23 * p.Y + (v2.position.X * v3.position.Y - v2.position.Y * v3.position.X);
+	float w1 = A31 * p.X - B31 * p.Y + (v3.position.X * v1.position.Y - v3.position.Y * v1.position.X);
+	float w2 = A12 * p.X - B12 * p.Y + (v1.position.X * v2.position.Y - v1.position.Y * v2.position.X);
 
-	//float w0 = w0_row, w1 = w1_row, w2 = w2_row;
-	float area = w0 + w1 + w2;;
+	const float area = w0 + w1 + w2;
 	float p0, p1, p2;
 	float z;
 	int incX = (v1.position.X < v2.position.X) ? 1 : -1;
@@ -258,9 +252,9 @@ void Graphics::DrawTriangle(Vertex3 v1, Vertex3 v2, Vertex3 v3)
 		} while (p.X < resolution.X && p.X > 0);
 
 		// One row step
-		w0 += B23;
-		w1 += B31;
-		w2 += B12;
+		w0 -= B23;
+		w1 -= B31;
+		w2 -= B12;
 		//WinDebug.Log(std::to_string(rows.Value()) + "\t row");
 
 
